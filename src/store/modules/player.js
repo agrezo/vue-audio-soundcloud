@@ -35,7 +35,7 @@ export default {
           commit('LOADING_STATUS', false)
         })
     },
-    loadWidget({ commit, state }, uri) {
+    loadWidget({ commit, state, dispatch }, uri) {
       return new Promise((resolve, reject) => {
         state.widget.load(uri, {
           show_artwork: false,

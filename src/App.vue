@@ -7,18 +7,30 @@
       list: list,
       index: index,
     })" v-for="(item, index) in list" :key="item.id">{{item.title}}</p>
-    <Player/>
+    <Player>
+      <Actions />
+      
+      <Timeline/>
+
+      <Volume />
+    </Player>
   </div>
 </template>
 
 <script>
   import { mapActions } from 'vuex'
   import Player from './components/Player.vue'
+  import Actions from './components/Actions.vue'
+  import Timeline from './components/Timeline.vue'
+  import Volume from './components/Volume.vue'
 
   export default {
     name: 'App',
     components: {
-      Player
+      Player,
+      Actions,
+      Timeline,
+      Volume,
     },
     data: () => ({
       list: [

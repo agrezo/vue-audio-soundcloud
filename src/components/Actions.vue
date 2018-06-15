@@ -28,7 +28,7 @@
         'play',
         'previousTrack',
       ]),
-    }
+    },
   }
 </script>
 

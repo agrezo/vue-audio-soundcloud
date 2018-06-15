@@ -1,54 +1,23 @@
 <template>
   <div class="sd-player">
-    <iframe id="soundcloud" width="100%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/234427625&amp;color=%23ff5500&amp;auto_play=false&amp;hide_related=false&amp;show_comments=false&amp;show_user=false&amp;show_reposts=false&amp;visual=false&amp;show_playcount=false&amp;show_artwork=false&amp;sharing=false&amp;buying=false"></iframe>
-
-    <!-- Player desktop -->
+    <iframe id="soundcloud" width="100%" height="300" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url="></iframe>
     <div class="sd-player-area">
-      <Actions />
-      
-      <div class="current-track">
-        <!-- <img v-if="Object.keys($store.state.player.current).length > 0" :src="$store.state.player.current.artwork_url" alt=""> -->
-        <div>
-          <div class="current-track-text" v-if="Object.keys(currentTrack).length > 0">
-            <div class="flex">
-              <h3>{{currentTrack.title}}</h3>
-              <p class="current-track-text-user">{{currentTrack.user.username}}</p>
-            </div>
-            <!-- <p class="time">{{$store.state.player.currentDuration}} / {{$store.state.player.totalDuration}}</p> -->
-          </div>
-  
-          <Timeline/>
-        </div>
-      </div>
-      
-      <div class="actions-right">
-        <Volume />
-      </div>  
+      <slot></slot>
     </div>
   </div>
 </template>
 
 <script>
   import Vue from 'vue'
-  import Actions from './Actions.vue'
-  import Timeline from './Timeline.vue'
-  import Volume from './Volume.vue'
 
   export default {
     name: 'vue-audio-soundcloud',
-    components: {
-      Actions,
-      Timeline,
-      Volume,
-    },
     data: () => ({
       currentTrack: {}
     }),
     mounted () {
       this.$store.commit('player/CREATE_WIDGET', SC.Widget('soundcloud'))
-      // this.$store.commit('player/CREATE_WIDGET', SC.Widget('soundcloud'))
-    },
-
+    }
   }
 </script>
 
