@@ -2,10 +2,10 @@
   <div id="app">
     <h1>Vue audio soundcloud</h1>
     <h2>Example of soundcloud audio player</h2>
-    <p @click="launchTrack({
+    <p @click="start({
       track: {id: item.id},
       list: list,
-      index: index,
+      listIndex: index,
     })" v-for="(item, index) in list" :key="item.id">{{item.title}}</p>
     <Player>
       <Actions />
@@ -40,7 +40,7 @@
     }),
     methods: {
       ...mapActions('player', [
-        'launchTrack',
+        'start',
       ]),
     }
   }

@@ -3,7 +3,7 @@ import axios from 'axios'
 export default {
   namespaced: true,
   state: () => ({
-    currentTrack: {},
+    currentTrack: '',
     currentTrackIndex: 0,
     display: false,
     list: [],
@@ -12,14 +12,14 @@ export default {
     widget: '',
   }),
   actions: {
-    launchTrack ({dispatch}, payload) {
+    start ({dispatch}, payload) {
       dispatch('loadTrack', payload)
       dispatch('manageListPlayer', payload)
     },
-    manageListPlayer ({commit}, {list, index}) {
-      if (!index) return commit('SET_LIST', [])
+    manageListPlayer({ commit }, { list, listIndex }) {
+      if (!listIndex) return commit('SET_LIST', [])
       commit('SET_LIST', list)
-      commit('SET_CURRENT_TRACK_INDEX', index)
+      commit('SET_CURRENT_TRACK_INDEX', listIndex)
     },
     loadTrack ({commit, dispatch}, {track}) {
       commit('LOADING_STATUS', true)
@@ -55,7 +55,7 @@ export default {
       })
     },
     play({ commit, state }) {
-      if (state.widget) {
+      if (state.widget && state.currentTrack) {
         state.widget.play()
         commit('PLAYING_STATUS', true)
       }

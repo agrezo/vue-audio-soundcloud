@@ -206,8 +206,4 @@
                 border-radius 100px
                 &.muted
                   width 0 !important
-
-  @media (max-width: 768px)
-    .sd-player
-      display none
 </style>
