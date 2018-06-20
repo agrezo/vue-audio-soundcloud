@@ -1,5 +1,10 @@
 import Vue from 'vue'
 
+export const convertTimeHHMMSS = (val) => {
+  let hhmmss = new Date(val * 1000).toISOString().substr(11, 8)
+  return (hhmmss.indexOf('00:') === 0) ? hhmmss.substr(3) : hhmmss
+}
+
 export default {
   name: 'vue-audio-soundcloud',
   props: ['elements'],
@@ -34,7 +39,7 @@ export default {
       this.totalDuration = track.duration
       this.loadWidget(track)
     },
-    loadWidget(track) {
+    loadWidget (track) {
       this.widget.load(track.uri, {
         show_artwork: false,
         show_comments: false,
@@ -50,16 +55,17 @@ export default {
         }
       })
     },
+    mute () {
+      this.isMuted = false
+    },
     next () {
-      if (this.list && this.list.length > 0) {
-        if (this.currentTrackIndex >= 0 && this.currentTrackIndex < this.list.length - 1) {
-          this.currentTrackIndex = this.currentTrackIndex + 1
-          this.pause()
-          this.loadTrack(this.list[this.currentTrackIndex])
-        }
+      if (this.list && this.list.length > 0 && this.currentTrackIndex >= 0 && this.currentTrackIndex < this.list.length - 1) {
+        this.currentTrackIndex = this.currentTrackIndex + 1
+        this.pause()
+        this.loadTrack(this.list[this.currentTrackIndex])
       }
     }, 
-    pause() {
+    pause () {
       this.widget.pause()
       this.isPlaying = false
     },
@@ -69,7 +75,7 @@ export default {
         this.isPlaying = true
       }
     },
-    previous() {
+    previous () {
       if (this.list && this.list.length > 0) {
         this.widget.getPosition((position) => {
           const duration = position / 1000
@@ -81,6 +87,47 @@ export default {
           }
         })
       }
+    },
+    setTime(e, el) {
+      this.widget.getDuration(duration => {
+        this.widget.seekTo(parseInt(e.offsetX / el.offsetWidth * duration))
+      })
+    },
+    setVolume (e, el) {
+      this.volume = (e.offsetX / el.offsetWidth) * 100
+      if (this.isMuted) this.isMuted = false
+    },
+    // setCurrentDuration(time) {
+    //   dispatch('formatTime', payload)
+    //     .then(data => {
+    //       commit('SET_CURRENT_DURATION', data)
+    //     })
+    // },
+    // setTotalDuration({ time) {
+    //   dispatch('formatTime', payload)
+    //     .then(data => {
+    //       commit('SET_TOTAL_DURATION', data)
+    //     })
+    // },
+    unmute () {
+      this.isMuted = true
+    },
+    _handleMouseUp () {
+      this.isDraggable = false
+    },
+    _handleTimelineClick (e) {
+      this.isDraggable = true
+      this.setTime(e, this.els.timeline)
+    },
+    _handleTimelineMove (e) {
+      if (this.isDraggable) this.setTime(e, this.els.timeline)
+    },
+    _handleVolumeClick (e) {
+      this.isDraggable = true
+      this.setVolume(e, this.els.volume)
+    },
+    _handleVolumeMove (e) {
+      if (this.isDraggable) this.setVolume(e, this.els.volume)
     },
   },
   mounted () {
@@ -96,34 +143,28 @@ export default {
       this.widget.bind(SC.Widget.Events.PLAY_PROGRESS, (data) => {
         this.progression = data.relativePosition * 100
       })
-
-      if (this.els.volume) {
-        this.els.volume.addEventListener('mousedown', (e) => {
-          this.isDraggable = true
-          this.setVolume({ e: e, el: this.els.volume })
-        })
-        this.els.volume.addEventListener('mousemove', (e) => {
-          if (this.isDraggable) this.setVolume({ e: e, el: this.els.volume })
-        })
-      }
-
       if (this.els.timeline) {
-        this.els.timeline.addEventListener('mousedown', (e) => {
-          this.isDraggable = true
-          this.setTime({ e: e, el: this.els.timeline })
-        })
-
-        this.els.timeline.addEventListener('mousemove', (e) => {
-          if (this.isDraggable) this.setTime({ e: e, el: this.els.timeline })
-        })
+        this.els.timeline.addEventListener('mousedown', this._handleTimelineClick)
+        this.els.timeline.addEventListener('mousemove', this._handleTimelineMove)
       }
-
-      document.addEventListener('mouseup', (e) => {
-        this.isDraggable = false
-      })
+      if (this.els.volume) {
+        this.els.volume.addEventListener('mousedown', this._handleVolumeClick)
+        this.els.volume.addEventListener('mousemove', this._handleVolumeMove)
+      }
+      document.addEventListener('mouseup', this._handleMouseUp)
     })
   },
   beforeDestoy() {
-    // this.widget.unbind()
+    this.widget.unbind(SC.Widget.Events.READY)
+    this.widget.unbind(SC.Widget.Events.PLAY_PROGRESS)
+    if (this.els.timeline) {
+      this.els.timeline.removeEventListener('mousedown', this._handleTimelineClick)
+      this.els.timeline.removeEventListener('mousemove', this._handleTimelineMove)
+    }
+    if (this.els.volume) {
+      this.els.volume.removeEventListener('mousedown', this._handleVolumeClick)
+      this.els.volume.removeEventListener('mousemove', this._handleVolumeMove)
+    }
+    document.removeEventListener('mouseup', this._handleMouseUp)
   }
 }
