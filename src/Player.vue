@@ -4,6 +4,7 @@
     <div class="vue-audio-soundcloud-container">
       <slot v-bind="{ 
         currentDuration,
+        currentTrack,
         listPosition,
         loop,
         isLoading,

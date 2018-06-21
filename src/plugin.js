@@ -10,7 +10,7 @@ export default {
   props: ['elements'],
   data: () => ({
     currentDuration: '00:00',
-    currentTrack: null,
+    currentTrack: {},
     els: {},
     list: [],
     listPosition: {},
@@ -77,7 +77,7 @@ export default {
       this.isPlaying = false
     },
     play () {
-      if (this.widget && this.currentTrack) {
+      if (this.widget && Object.keys(this.currentTrack).length > 0) {
         this.widget.play()
         this.isPlaying = true
       }

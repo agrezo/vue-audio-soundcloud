@@ -3,7 +3,7 @@
     <h1>Vue audio soundcloud</h1>
     <h2>Example of soundcloud audio player</h2>
     <Player :elements="{ timeline: 'timeline', volume: 'volume' }" @change="setNewTrack">
-      <template slot-scope="{currentDuration, listPosition, loop, isLoop, isPlaying, next, play, pause, previous, progression, totalDuration, volume}">
+      <template slot-scope="{currentTrack, currentDuration, listPosition, loop, isLoop, isPlaying, next, play, pause, previous, progression, totalDuration, volume}">
         {{listPosition}}
         <button @click="previous()" :class="{disabled: listPosition.first}">Prev</button>
         <button @click="play()" v-if="!isPlaying">Play</button>
@@ -11,6 +11,7 @@
         <button @click="loop()">Loop: {{isLoop}}</button>
         <button @click="next()" :class="{disabled: listPosition.last}">Next</button>
         {{currentDuration}} / {{totalDuration}}
+        {{currentTrack.title}}
 
         <div class="timeline" id="timeline">
           <div class="timeline-bar" :style="`width:${progression}%`"></div>
