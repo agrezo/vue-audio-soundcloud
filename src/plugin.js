@@ -11,9 +11,9 @@ export default {
   data: () => ({
     currentDuration: '00:00',
     currentTrack: null,
-    currentTrackIndex: 0,
     els: {},
     list: [],
+    listPosition: {},
     isDraggable: false,
     isLoading: false,
     isLoop: false,
@@ -33,7 +33,7 @@ export default {
     loadList (track, list) {
       if (!list) return this.list = []
       this.list = list
-      this.currentTrackIndex = list.findIndex(item => item.id === track.id)
+      this.setListPosition(list.findIndex(item => item.id === track.id))
     },
     loadTrack (track) {
       this.currentTrack = track
@@ -66,10 +66,10 @@ export default {
       this.isMuted = false
     },
     next () {
-      if (this.list && this.list.length > 0 && this.currentTrackIndex >= 0 && this.currentTrackIndex < this.list.length - 1) {
-        this.currentTrackIndex = this.currentTrackIndex + 1
+      if (this.list && this.list.length > 0 && this.listPosition.current >= 0 && this.listPosition.current < this.list.length - 1) {
+        this.setListPosition(this.listPosition.current + 1)
         this.pause()
-        this.loadTrack(this.list[this.currentTrackIndex])
+        this.loadTrack(this.list[this.listPosition.current])
       }
     }, 
     pause () {
@@ -84,16 +84,21 @@ export default {
     },
     previous () {
       if (this.list && this.list.length > 0) {
-        this.widget.getPosition((position) => {
-          const duration = position / 1000
+        this.widget.getPosition((data) => {
+          const duration = data / 1000
           if (duration > 10) return this.widget.seekTo(0)
-          if (this.currentTrackIndex > 0) {
-            this.currentTrackIndex = this.currentTrackIndex - 1
+          if (this.listPosition.current > 0) {
+            this.setListPosition(this.listPosition.current - 1)
             this.pause()
-            this.loadTrack(this.list[this.currentTrackIndex])
+            this.loadTrack(this.list[this.listPosition.current])
           }
         })
       }
+    },
+    setListPosition (position) {
+      this.listPosition.current = position
+      this.listPosition.first = this.listPosition.current <= 0 ? true : false
+      this.listPosition.last = this.listPosition.current === this.list.length - 1 ? true : false
     },
     setTime(e, el) {
       this.widget.getDuration(duration => {
