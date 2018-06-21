@@ -9,8 +9,11 @@ export default {
   name: 'vue-audio-soundcloud',
   props: ['elements'],
   data: () => ({
-    currentDuration: '00:00',
     currentTrack: {},
+    duration: {
+      current: '00:00',
+      total: '--:--',
+    },
     els: {},
     list: [],
     listPosition: {},
@@ -20,7 +23,6 @@ export default {
     isMuted: false,
     isPlaying: false,
     progression: 0,
-    totalDuration: '--:--',
     volume: 50,
     widget: null,
   }),
@@ -38,7 +40,7 @@ export default {
     loadTrack (track) {
       this.currentTrack = track
       this.progression = 0
-      this.totalDuration = convertTimeMMSS(track.duration)
+      this.duration.total = convertTimeMMSS(track.duration)
       this.loadWidget(track)
     },
     loadWidget (track) {
@@ -85,8 +87,8 @@ export default {
     previous () {
       if (this.list && this.list.length > 0) {
         this.widget.getPosition((data) => {
-          const duration = data / 1000
-          if (duration > 10) return this.widget.seekTo(0)
+          const position = data / 1000
+          if (position > 10) return this.widget.seekTo(0)
           if (this.listPosition.current > 0) {
             this.setListPosition(this.listPosition.current - 1)
             this.pause()
@@ -143,7 +145,7 @@ export default {
     this.widget.bind(SC.Widget.Events.READY, () => {
       this.widget.bind(SC.Widget.Events.PLAY_PROGRESS, (data) => {
         this.progression = data.relativePosition * 100
-        this.currentDuration = convertTimeMMSS(data.currentPosition)
+        this.duration.current = convertTimeMMSS(data.currentPosition)
       })
       this.widget.bind(SC.Widget.Events.FINISH, () => {
         this.next()
