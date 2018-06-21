@@ -23,7 +23,7 @@ export default {
     isMuted: false,
     isPlaying: false,
     progression: 0,
-    volume: 50,
+    volume: 10,
     widget: null,
   }),
   methods: {
@@ -44,7 +44,7 @@ export default {
       this.loadTrack(track)
     },
     loadList (track, list) {
-      if (!list) return this.list = []
+      if (!list) return this.list = [], this.listPosition = {}
       this.list = list
       this.setListPosition(list.findIndex(item => item.id === track.id))
     },
