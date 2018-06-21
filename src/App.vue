@@ -24,7 +24,6 @@
     <p 
       @click="$player.load({
         track: item,
-        list: list,
       })"
       v-for="(item) in list"
       :key="item.id"

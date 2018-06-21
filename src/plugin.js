@@ -27,6 +27,17 @@ export default {
     widget: null,
   }),
   methods: {
+    finished () {
+      if (this.isLoop === 'track') {
+        this.widget.seekTo(0)
+        return this.play()
+      }
+      if (this.isLoop === 'list' && this.listPosition.last) {
+        this.setListPosition(0)
+        return this.loadTrack(this.list[this.listPosition.current])
+      }
+      this.next()
+    },
     load ({track, list}) {
       this.isLoading = true
       this.loadList(track, list)
@@ -61,8 +72,8 @@ export default {
       })
     },
     loop () {
-      let states = [false, 'track', 'all']
-      this.isLoop = this.isLoop === 'all' ? states[0] : states[states.indexOf(this.isLoop) + 1]
+      let states = [false, 'track', 'list']
+      this.isLoop = this.isLoop === 'list' ? states[0] : states[states.indexOf(this.isLoop) + 1]
     },
     mute () {
       this.isMuted = false
@@ -70,7 +81,6 @@ export default {
     next () {
       if (this.list && this.list.length > 0 && this.listPosition.current >= 0 && this.listPosition.current < this.list.length - 1) {
         this.setListPosition(this.listPosition.current + 1)
-        this.pause()
         this.loadTrack(this.list[this.listPosition.current])
       }
     }, 
@@ -91,7 +101,6 @@ export default {
           if (position > 10) return this.widget.seekTo(0)
           if (this.listPosition.current > 0) {
             this.setListPosition(this.listPosition.current - 1)
-            this.pause()
             this.loadTrack(this.list[this.listPosition.current])
           }
         })
@@ -148,7 +157,7 @@ export default {
         this.duration.current = convertTimeMMSS(data.currentPosition)
       })
       this.widget.bind(SC.Widget.Events.FINISH, () => {
-        this.next()
+        this.finished()
       })
       if (this.els.timeline) {
         this.els.timeline.addEventListener('mousedown', this._handleTimelineClick)
@@ -163,8 +172,8 @@ export default {
   },
   beforeDestoy() {
     this.widget.unbind(SC.Widget.Events.READY)
-    this.widget.unbind(SC.Widget.Events.FINISH)
     this.widget.unbind(SC.Widget.Events.PLAY_PROGRESS)
+    this.widget.unbind(SC.Widget.Events.FINISH)
     if (this.els.timeline) {
       this.els.timeline.removeEventListener('mousedown', this._handleTimelineClick)
       this.els.timeline.removeEventListener('mousemove', this._handleTimelineMove)
