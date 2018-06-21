@@ -16,10 +16,11 @@ export default {
     list: [],
     isDraggable: false,
     isLoading: false,
+    isLoop: false,
     isMuted: false,
     isPlaying: false,
     progression: 0,
-    totalDuration: '',
+    totalDuration: '--:--',
     volume: 50,
     widget: null,
   }),
@@ -56,6 +57,10 @@ export default {
           this.$emit('change', this.currentTrack.id)
         }
       })
+    },
+    loop () {
+      let states = [false, 'track', 'all']
+      this.isLoop = this.isLoop === 'all' ? states[0] : states[states.indexOf(this.isLoop) + 1]
     },
     mute () {
       this.isMuted = false

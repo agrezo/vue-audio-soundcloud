@@ -3,14 +3,10 @@
     <h1>Vue audio soundcloud</h1>
     <h2>Example of soundcloud audio player</h2>
     <Player :elements="{ timeline: 'timeline', volume: 'volume' }" @change="setNewTrack">
-      <!-- <Actions />
-      
-      <Timeline/>
-
-      <Volume /> -->
-      <template slot-scope="{currentDuration, next, play, pause, previous, progression, totalDuration, volume}">
+      <template slot-scope="{currentDuration, loop, isLoop, next, play, pause, previous, progression, totalDuration, volume}">
         <button @click="previous()">Prev</button>
         <button @click="play()">Play</button>
+        <button @click="loop()">Loop: {{isLoop}}</button>
         <button @click="pause()">Pause</button>
         <button @click="next()">Next</button>
         {{currentDuration}} / {{totalDuration}}
