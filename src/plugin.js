@@ -1,14 +1,15 @@
 import Vue from 'vue'
 
-export const convertTimeHHMMSS = (val) => {
-  let hhmmss = new Date(val * 1000).toISOString().substr(11, 8)
-  return (hhmmss.indexOf('00:') === 0) ? hhmmss.substr(3) : hhmmss
+export const convertTimeMMSS = (val) => { // TODO: to fix
+  let mmss = new Date(val).toISOString().substr(11, 8)
+  return (mmss.indexOf('00:') === 0) ? mmss.substr(3) : mmss
 }
 
 export default {
   name: 'vue-audio-soundcloud',
   props: ['elements'],
   data: () => ({
+    currentDuration: '00:00',
     currentTrack: null,
     currentTrackIndex: 0,
     els: {},
@@ -18,8 +19,8 @@ export default {
     isMuted: false,
     isPlaying: false,
     progression: 0,
-    totalDuration: 0,
-    volume: 15,
+    totalDuration: '',
+    volume: 50,
     widget: null,
   }),
   methods: {
@@ -36,7 +37,7 @@ export default {
     loadTrack (track) {
       this.currentTrack = track
       this.progression = 0
-      this.totalDuration = track.duration
+      this.totalDuration = convertTimeMMSS(track.duration)
       this.loadWidget(track)
     },
     loadWidget (track) {
@@ -52,6 +53,7 @@ export default {
           this.isLoading = false
           this.isPlaying = true
           this.isMuted ? this.widget.setVolume(0) : this.widget.setVolume(this.volume)
+          this.$emit('change', this.currentTrack.id)
         }
       })
     },
@@ -95,20 +97,9 @@ export default {
     },
     setVolume (e, el) {
       this.volume = (e.offsetX / el.offsetWidth) * 100
+      this.widget.setVolume(this.volume)
       if (this.isMuted) this.isMuted = false
     },
-    // setCurrentDuration(time) {
-    //   dispatch('formatTime', payload)
-    //     .then(data => {
-    //       commit('SET_CURRENT_DURATION', data)
-    //     })
-    // },
-    // setTotalDuration({ time) {
-    //   dispatch('formatTime', payload)
-    //     .then(data => {
-    //       commit('SET_TOTAL_DURATION', data)
-    //     })
-    // },
     unmute () {
       this.isMuted = true
     },
@@ -131,7 +122,7 @@ export default {
     },
   },
   mounted () {
-    this.widget = SC.Widget('soundcloud');
+    this.widget = SC.Widget('soundcloud-iframe');
     this.els.timeline = document.getElementById(this.elements.timeline)
     this.els.volume = document.getElementById(this.elements.volume)
 
@@ -142,6 +133,10 @@ export default {
     this.widget.bind(SC.Widget.Events.READY, () => {
       this.widget.bind(SC.Widget.Events.PLAY_PROGRESS, (data) => {
         this.progression = data.relativePosition * 100
+        this.currentDuration = convertTimeMMSS(data.currentPosition)
+      })
+      this.widget.bind(SC.Widget.Events.FINISH, () => {
+        this.next()
       })
       if (this.els.timeline) {
         this.els.timeline.addEventListener('mousedown', this._handleTimelineClick)
@@ -156,6 +151,7 @@ export default {
   },
   beforeDestoy() {
     this.widget.unbind(SC.Widget.Events.READY)
+    this.widget.unbind(SC.Widget.Events.FINISH)
     this.widget.unbind(SC.Widget.Events.PLAY_PROGRESS)
     if (this.els.timeline) {
       this.els.timeline.removeEventListener('mousedown', this._handleTimelineClick)
