@@ -24,7 +24,7 @@ export default {
     isPlaying: false,
     progression: 0,
     volume: 10,
-    widget: null,
+    widget: {},
   }),
   methods: {
     finished () {
@@ -44,7 +44,7 @@ export default {
       this.loadTrack(track)
     },
     loadList (track, list) {
-      if (!list) return this.list = [], this.listPosition = {}
+      if (!list) return this.list = [], this.listPosition = false
       this.list = list
       this.setListPosition(list.findIndex(item => item.id === track.id))
     },
@@ -107,6 +107,7 @@ export default {
       }
     },
     setListPosition (position) {
+      if (!this.listPosition) this.listPosition = {}
       this.listPosition.current = position
       this.listPosition.first = this.listPosition.current <= 0 ? true : false
       this.listPosition.last = this.listPosition.current === this.list.length - 1 ? true : false
@@ -143,13 +144,13 @@ export default {
     },
   },
   mounted () {
+    Vue.prototype.$audioSoundcloud = {
+      load: params => this.load(params)
+    }
+
     this.widget = SC.Widget('soundcloud-iframe');
     this.els.timeline = document.getElementById(this.elements.timeline)
     this.els.volume = document.getElementById(this.elements.volume)
-
-    Vue.prototype.$player = {}
-    Vue.prototype.$player.load = params => this.load(params)
-    // Pourquoi pas insérer this.$player dans Vue.prototype avec certaines methods
 
     this.widget.bind(SC.Widget.Events.READY, () => {
       this.widget.bind(SC.Widget.Events.PLAY_PROGRESS, (data) => {

@@ -9,6 +9,7 @@
         loop,
         isLoading,
         isLoop,
+        isMuted,
         isPlaying,
         next,
         play,
