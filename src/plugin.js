@@ -23,7 +23,7 @@ export default {
     isMuted: false,
     isPlaying: false,
     progression: 0,
-    volume: 10,
+    volume: 80,
     widget: {},
   }),
   methods: {
@@ -31,10 +31,6 @@ export default {
       if (this.isLoop === 'track') {
         this.widget.seekTo(0)
         return this.play()
-      }
-      if (this.isLoop === 'list' && this.listPosition.last) {
-        this.setListPosition(0)
-        return this.loadTrack(this.list[this.listPosition.current])
       }
       this.next()
     },
@@ -74,14 +70,21 @@ export default {
     loop () {
       let states = [false, 'track', 'list']
       this.isLoop = this.isLoop === 'list' ? states[0] : states[states.indexOf(this.isLoop) + 1]
+      this.setListPosition() // to update listPosition first and last
     },
     mute () {
       this.isMuted = false
     },
     next () {
-      if (this.list && this.list.length > 0 && this.listPosition.current >= 0 && this.listPosition.current < this.list.length - 1) {
-        this.setListPosition(this.listPosition.current + 1)
-        this.loadTrack(this.list[this.listPosition.current])
+      if (this.list && this.list.length > 0) {
+        if (this.isLoop === 'list' && this.listPosition.current === this.list.length - 1) {
+          this.setListPosition(0)
+          this.loadTrack(this.list[this.listPosition.current])
+        }
+        else if (this.listPosition.current >= 0 && this.listPosition.current < this.list.length - 1) {
+          this.setListPosition(this.listPosition.current + 1)
+          this.loadTrack(this.list[this.listPosition.current])
+        } 
       }
     }, 
     pause () {
@@ -99,7 +102,11 @@ export default {
         this.widget.getPosition((data) => {
           const position = data / 1000
           if (position > 10) return this.widget.seekTo(0)
-          if (this.listPosition.current > 0) {
+          if (this.isLoop === 'list' && this.listPosition.current === 0) {
+            this.setListPosition(this.list.length - 1)
+            this.loadTrack(this.list[this.listPosition.current])
+          } 
+          else if (this.listPosition.current > 0) {
             this.setListPosition(this.listPosition.current - 1)
             this.loadTrack(this.list[this.listPosition.current])
           }
@@ -108,9 +115,9 @@ export default {
     },
     setListPosition (position) {
       if (!this.listPosition) this.listPosition = {}
-      this.listPosition.current = position
-      this.listPosition.first = this.listPosition.current <= 0 ? true : false
-      this.listPosition.last = this.listPosition.current === this.list.length - 1 ? true : false
+      this.listPosition.current = position !== undefined ? position : this.listPosition.current
+      this.listPosition.first = (this.listPosition.current <= 0 && this.isLoop !== 'list' ) ? true : false
+      this.listPosition.last = (this.listPosition.current === this.list.length - 1 && this.isLoop !== 'list') ? true : false
     },
     setTime(e, el) {
       this.widget.getDuration(duration => {
