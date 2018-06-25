@@ -34,22 +34,26 @@ export default {
       }
       this.next()
     },
+
     load ({track, list}) {
       this.isLoading = true
       this.loadList(track, list)
       this.loadTrack(track)
     },
+
     loadList (track, list) {
       if (!list) return this.list = [], this.listPosition = false
       this.list = list
       this.setListPosition(list.findIndex(item => item.id === track.id))
     },
+
     loadTrack (track) {
       this.currentTrack = track
       this.progression = 0
       this.duration.total = convertTimeMMSS(track.duration)
       this.loadWidget(track)
     },
+
     loadWidget (track) {
       this.widget.load(track.uri, {
         show_artwork: false,
@@ -67,14 +71,17 @@ export default {
         }
       })
     },
+
     loop () {
       let states = [false, 'track', 'list']
       this.isLoop = this.isLoop === 'list' ? states[0] : states[states.indexOf(this.isLoop) + 1]
       this.setListPosition() // to update listPosition first and last
     },
+
     mute () {
       this.isMuted = false
     },
+
     next () {
       if (this.list && this.list.length > 0) {
         if (this.isLoop === 'list' && this.listPosition.current === this.list.length - 1) {
@@ -87,16 +94,19 @@ export default {
         } 
       }
     }, 
+
     pause () {
       this.widget.pause()
       this.isPlaying = false
     },
+
     play () {
       if (this.widget && Object.keys(this.currentTrack).length > 0) {
         this.widget.play()
         this.isPlaying = true
       }
     },
+
     previous () {
       if (this.list && this.list.length > 0) {
         this.widget.getPosition((data) => {
@@ -113,39 +123,48 @@ export default {
         })
       }
     },
+
     setListPosition (position) {
       if (!this.listPosition) this.listPosition = {}
       this.listPosition.current = position !== undefined ? position : this.listPosition.current
       this.listPosition.first = (this.listPosition.current <= 0 && this.isLoop !== 'list' ) ? true : false
       this.listPosition.last = (this.listPosition.current === this.list.length - 1 && this.isLoop !== 'list') ? true : false
     },
+
     setTime(e, el) {
       this.widget.getDuration(duration => {
         this.widget.seekTo(parseInt(e.offsetX / el.offsetWidth * duration))
       })
     },
+
     setVolume (e, el) {
       this.volume = (e.offsetX / el.offsetWidth) * 100
       this.widget.setVolume(this.volume)
       if (this.isMuted) this.isMuted = false
     },
+
     unmute () {
       this.isMuted = true
     },
+
     _handleMouseUp () {
       this.isDraggable = false
     },
+
     _handleTimelineClick (e) {
       this.isDraggable = true
       this.setTime(e, this.els.timeline)
     },
+
     _handleTimelineMove (e) {
       if (this.isDraggable) this.setTime(e, this.els.timeline)
     },
+
     _handleVolumeClick (e) {
       this.isDraggable = true
       this.setVolume(e, this.els.volume)
     },
+    
     _handleVolumeMove (e) {
       if (this.isDraggable) this.setVolume(e, this.els.volume)
     },
