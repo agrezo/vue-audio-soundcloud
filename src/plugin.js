@@ -75,8 +75,12 @@ export default {
 
     loop () {
       let states = [false, 'track', 'list']
-      this.isLoop = this.isLoop === 'list' ? states[0] : states[states.indexOf(this.isLoop) + 1]
-      this.setListPosition() // to update listPosition first and last
+      if (this.list.length > 0) {
+        this.isLoop = this.isLoop === 'list' ? states[0] : states[states.indexOf(this.isLoop) + 1]
+        this.setListPosition() // to update listPosition first and last
+      }
+      else this.isLoop = this.isLoop === 'track' ? states[0] : states[states.indexOf(this.isLoop) + 1]
+      
     },
 
     mute () {
