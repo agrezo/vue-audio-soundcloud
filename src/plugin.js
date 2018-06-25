@@ -33,6 +33,7 @@ export default {
         return this.play()
       }
       this.next()
+      if (this.list && this.list.length <= 0 || this.list && this.list.length > 0 && !this.isLoop) this.pause()
     },
 
     load ({track, list}) {
@@ -91,7 +92,7 @@ export default {
         else if (this.listPosition.current >= 0 && this.listPosition.current < this.list.length - 1) {
           this.setListPosition(this.listPosition.current + 1)
           this.loadTrack(this.list[this.listPosition.current])
-        } 
+        }
       }
     }, 
 
@@ -184,6 +185,7 @@ export default {
         this.duration.current = convertTimeMMSS(data.currentPosition)
       })
       this.widget.bind(SC.Widget.Events.FINISH, () => {
+        
         this.finished()
       })
       if (this.els.timeline) {
