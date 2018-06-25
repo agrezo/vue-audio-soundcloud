@@ -80,7 +80,6 @@ export default {
         this.setListPosition() // to update listPosition first and last
       }
       else this.isLoop = this.isLoop === 'track' ? states[0] : states[states.indexOf(this.isLoop) + 1]
-      
     },
 
     mute () {
@@ -189,7 +188,6 @@ export default {
         this.duration.current = convertTimeMMSS(data.currentPosition)
       })
       this.widget.bind(SC.Widget.Events.FINISH, () => {
-        
         this.finished()
       })
       if (this.els.timeline) {
