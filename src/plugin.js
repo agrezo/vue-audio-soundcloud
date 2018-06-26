@@ -83,7 +83,8 @@ export default {
     },
 
     mute () {
-      this.isMuted = false
+      this.isMuted = true
+      this.widget.setVolume(0)
     },
 
     next () {
@@ -148,7 +149,8 @@ export default {
     },
 
     unmute () {
-      this.isMuted = true
+      this.isMuted = false
+      this.widget.setVolume(this.volume)
     },
 
     _handleMouseUp () {
@@ -172,6 +174,16 @@ export default {
     _handleVolumeMove (e) {
       if (this.isDraggable) this.setVolume(e, this.els.volume)
     },
+
+    _shortcuts (e) {
+      let key = e.which || e.keyCode
+      switch (key) {
+        case 77:
+          console.log('passed')
+          this.isMuted ? this.unmute() : this.mute()
+          break
+      }
+    }
   },
   mounted () {
     Vue.prototype.$audioSoundcloud = {
@@ -199,6 +211,7 @@ export default {
         this.els.volume.addEventListener('mousemove', this._handleVolumeMove)
       }
       document.addEventListener('mouseup', this._handleMouseUp)
+      document.addEventListener('keydown', this._shortcuts)
     })
   },
   beforeDestoy() {

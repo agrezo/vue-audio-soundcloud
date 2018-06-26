@@ -3,7 +3,7 @@
     <h1>Vue audio soundcloud</h1>
     <h2>Example of soundcloud audio player</h2>
     <vue-audio-soundcloud :elements="{ timeline: 'timeline', volume: 'volume' }" @change="setNewTrack">
-      <template slot-scope="{currentTrack, duration, listPosition, loop, isLoop, isPlaying, next, play, pause, previous, progression, volume}">
+      <template slot-scope="{currentTrack, duration, listPosition, loop, isLoop, isMuted, isPlaying, next, play, pause, previous, progression, volume}">
         <button @click="previous()" :class="{disabled: !listPosition || listPosition.first}">Prev</button>
         <button @click="play()" v-if="!isPlaying">Play</button>
         <button @click="pause()" v-else>Pause</button>
@@ -17,7 +17,7 @@
         </div>
 
         <div class="volume" id="volume">
-          <div class="volume-bar" :style="`width:${volume}%`"></div>
+          <div class="volume-bar" :style="`width:${volume}%`" :class="{muted: isMuted}"></div>
         </div>
       </template>
     </vue-audio-soundcloud>
@@ -112,4 +112,6 @@
     height 8px
     left 0
     position absolute
+    &.muted
+      width 0 !important
 </style>
