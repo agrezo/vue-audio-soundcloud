@@ -55,7 +55,7 @@ export default {
       this.loadWidget(track)
     },
 
-    loadWidget (track) {
+    loadWidget(track) {
       this.widget.load(track.uri, {
         show_artwork: false,
         show_comments: false,
@@ -177,9 +177,13 @@ export default {
 
     _shortcuts (e) {
       let key = e.which || e.keyCode
+      console.log(key)
       switch (key) {
-        case 77:
-          console.log('passed')
+        case 32: // Space bar
+          e.preventDefault()
+          this.isPlaying ? this.pause() : this.play()
+          break
+        case 77: // M
           this.isMuted ? this.unmute() : this.mute()
           break
       }
@@ -227,5 +231,6 @@ export default {
       this.els.volume.removeEventListener('mousemove', this._handleVolumeMove)
     }
     document.removeEventListener('mouseup', this._handleMouseUp)
+    document.removeEventListener('keydown', this._shortcuts)
   }
 }

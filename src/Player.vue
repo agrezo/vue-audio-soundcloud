@@ -29,6 +29,6 @@
     left: 99999px;
     position: fixed;
     top: 0;
+    display: none;
   }
-
 </style>
