@@ -177,7 +177,6 @@ export default {
 
     _shortcuts (e) {
       let key = e.which || e.keyCode
-      console.log(key)
       switch (key) {
         case 32: // Space bar
           e.preventDefault()
@@ -199,12 +198,18 @@ export default {
     this.els.volume = document.getElementById(this.elements.volume)
 
     this.widget.bind(SC.Widget.Events.READY, () => {
-      this.widget.bind(SC.Widget.Events.PLAY_PROGRESS, (data) => {
-        this.progression = data.relativePosition * 100
-        this.duration.current = convertTimeMMSS(data.currentPosition)
-      })
       this.widget.bind(SC.Widget.Events.FINISH, () => {
         this.finished()
+      })
+      this.widget.bind(SC.Widget.Events.PAUSE, () => {
+        this.isPlaying = false
+      })
+      this.widget.bind(SC.Widget.Events.PLAY, () => {
+        this.isPlaying = true
+      })
+      this.widget.bind(SC.Widget.Events.PLAY_PROGRESS, data => {
+        this.progression = data.relativePosition * 100
+        this.duration.current = convertTimeMMSS(data.currentPosition)
       })
       if (this.els.timeline) {
         this.els.timeline.addEventListener('mousedown', this._handleTimelineClick)
@@ -219,9 +224,11 @@ export default {
     })
   },
   beforeDestoy() {
-    this.widget.unbind(SC.Widget.Events.READY)
-    this.widget.unbind(SC.Widget.Events.PLAY_PROGRESS)
     this.widget.unbind(SC.Widget.Events.FINISH)
+    this.widget.unbind(SC.Widget.Events.PAUSE)
+    this.widget.unbind(SC.Widget.Events.PLAY)
+    this.widget.unbind(SC.Widget.Events.PLAY_PROGRESS)
+    this.widget.unbind(SC.Widget.Events.READY)
     if (this.els.timeline) {
       this.els.timeline.removeEventListener('mousedown', this._handleTimelineClick)
       this.els.timeline.removeEventListener('mousemove', this._handleTimelineMove)
