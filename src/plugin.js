@@ -143,7 +143,7 @@ export default {
     },
 
     setVolume (e, el) {
-      this.volume = (e.offsetX / el.offsetWidth) * 100
+      this.volume = parseInt((e.offsetX / el.offsetWidth) * 100)
       this.widget.setVolume(this.volume)
       if (this.isMuted) this.isMuted = false
     },
@@ -177,14 +177,34 @@ export default {
 
     _shortcuts (e) {
       let key = e.which || e.keyCode
-      switch (key) {
-        case 32: // Space bar
-          e.preventDefault()
-          this.isPlaying ? this.pause() : this.play()
-          break
-        case 77: // M
-          this.isMuted ? this.unmute() : this.mute()
-          break
+      if (key === 32) { // Space bar
+        e.preventDefault() 
+        this.isPlaying ? this.pause() : this.play()
+      }
+      else if (key === 77) this.isMuted ? this.unmute() : this.mute() // M
+      else if (key === 37 && e.shiftKey) {  // SHIFT + L-ARROW
+        this.previous()
+      }
+      else if (key === 39 && e.shiftKey) { // SHIFT + R-ARROW
+        this.next()
+      }
+      else if (key === 37) {  // L-ARROW
+        this.widget.getPosition(position => {
+          position >= 5000 ? this.widget.seekTo(position - 5000) : this.widget.seekTo(0)
+        })
+      }
+      else if (key === 39) { // R-ARROW
+        this.widget.getPosition(position => {
+          this.widget.seekTo(position + 5000)
+        })
+      }
+      else if (key === 38 && e.shiftKey) { // SHIFT + U-ARROW
+        (this.volume <= 95) ? this.volume += 5 : this.volume = 100
+        this.widget.setVolume(this.volume)
+      }
+      else if (key === 40 && e.shiftKey) { // SHIFT + D-ARROW
+        (this.volume >= 5) ? this.volume -= 5 : this.volume = 0
+        this.widget.setVolume(this.volume)
       }
     }
   },
