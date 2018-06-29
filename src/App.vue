@@ -2,7 +2,7 @@
   <div id="app">
     <h1>Vue audio soundcloud</h1>
     <h2>Example of soundcloud audio player</h2>
-    <vue-audio-soundcloud :elements="{ timeline: 'timeline', volume: 'volume' }" @change="setNewTrack">
+    <vue-audio-soundcloud :elements="{ timeline: 'timeline', volume: 'volume' }" defaultVolume="40" @change="setNewTrack">
       <template slot-scope="{currentTrack, duration, listPosition, loop, isLoop, isMuted, isPlaying, next, play, pause, previous, progression, volume}">
         <button @click="previous()" :class="{disabled: !listPosition || listPosition.first}">Prev</button>
         <button @click="play()" v-if="!isPlaying">Play</button>

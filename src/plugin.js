@@ -7,7 +7,14 @@ export const convertTimeMMSS = (val) => { // TODO: to fix
 
 export default {
   name: 'vue-audio-soundcloud',
-  props: ['elements'],
+  props: {
+    elements: {
+      default: {},
+    },
+    defaultVolume: {
+      default: 100,
+    },
+  },
   data: () => ({
     currentTrack: {},
     duration: {
@@ -24,7 +31,7 @@ export default {
     isPlaying: false,
     progression: 0,
     seekToShortcutAvailable: true,
-    volume: 40,
+    volume: 100,
     widget: {},
   }),
   methods: {
@@ -216,7 +223,9 @@ export default {
       load: params => this.load(params)
     }
 
-    this.widget = SC.Widget('soundcloud-iframe');
+    this.volume = this.defaultVolume
+
+    this.widget = SC.Widget('soundcloud-iframe')
     this.els.timeline = document.getElementById(this.elements.timeline)
     this.els.volume = document.getElementById(this.elements.volume)
 
