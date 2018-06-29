@@ -23,7 +23,8 @@ export default {
     isMuted: false,
     isPlaying: false,
     progression: 0,
-    volume: 80,
+    seekToShortcutAvailable: true,
+    volume: 40,
     widget: {},
   }),
   methods: {
@@ -188,14 +189,16 @@ export default {
       else if (key === 39 && e.shiftKey) { // SHIFT + R-ARROW
         this.next()
       }
-      else if (key === 37) {  // L-ARROW
+      else if (key === 37 || key === 39) {  // L-ARROW
         this.widget.getPosition(position => {
-          position >= 5000 ? this.widget.seekTo(position - 5000) : this.widget.seekTo(0)
-        })
-      }
-      else if (key === 39) { // R-ARROW
-        this.widget.getPosition(position => {
-          this.widget.seekTo(position + 5000)
+          if (this.seekToShortcutAvailable) {
+            if (key === 37) position >= 5000 ? this.widget.seekTo(position - 5000) : this.widget.seekTo(0)
+            if (key === 39) this.widget.seekTo(position + 5000)
+            this.seekToShortcutAvailable = false
+            setTimeout(() => {
+              this.seekToShortcutAvailable = true
+            }, 200);
+          }
         })
       }
       else if (key === 38 && e.shiftKey) { // SHIFT + U-ARROW

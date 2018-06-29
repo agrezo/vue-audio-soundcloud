@@ -7,7 +7,6 @@
         <button @click="previous()" :class="{disabled: !listPosition || listPosition.first}">Prev</button>
         <button @click="play()" v-if="!isPlaying">Play</button>
         <button @click="pause()" v-else>Pause</button>
-        {{isPlaying}}
         <button @click="loop()">Loop: {{isLoop}}</button>
         <button @click="next()" :class="{disabled: !listPosition || listPosition.last}">Next</button>
         {{duration.current}} / {{duration.total}}
