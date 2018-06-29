@@ -9,9 +9,11 @@ export default {
   name: 'vue-audio-soundcloud',
   props: {
     elements: {
+      type: Object,
       default: {},
     },
     defaultVolume: {
+      type: Number,
       default: 100,
     },
   },
@@ -221,7 +223,7 @@ export default {
     }
   },
   mounted () {
-    Vue.prototype.$audioSoundcloud = {
+    Vue.prototype.$AudioSoundcloud = {
       load: params => this.load(params)
     }
 

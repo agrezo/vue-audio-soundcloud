@@ -2,7 +2,7 @@
   <div id="app">
     <h1>Vue audio soundcloud</h1>
     <h2>Example of soundcloud audio player</h2>
-    <vue-audio-soundcloud :elements="{ timeline: 'timeline', volume: 'volume' }" defaultVolume="40" @onLoad="setNewTrack">
+    <vue-audio-soundcloud :elements="{ timeline: 'timeline', volume: 'volume' }" :defaultVolume="40" @onLoad="setNewTrack">
       <template slot-scope="{currentTrack, duration, listPosition, loop, isLoop, isMuted, isPlaying, next, play, pause, previous, progression, volume}">
         <button @click="previous()" :class="{disabled: !listPosition || listPosition.first}">Prev</button>
         <button @click="play()" v-if="!isPlaying">Play</button>
@@ -23,7 +23,7 @@
     </vue-audio-soundcloud>
     <h4>Without list</h4>
     <p 
-      @click="$audioSoundcloud.load({
+      @click="$AudioSoundcloud.load({
         track: item,
       })"
       v-for="(item) in withoutList"
@@ -34,7 +34,7 @@
     </p>
     <h4>With list</h4>
     <p 
-      @click="$audioSoundcloud.load({
+      @click="$AudioSoundcloud.load({
         track: item,
         list: withList,
       })"
