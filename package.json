@@ -1,10 +1,10 @@
 {
-  "name": "vue2-siema",
-  "version": "0.2.0",
-  "description": "Vue component for siema",
-  "main": "dist/vue2-siema.umd.js",
-  "module": "dist/vue2-siema.esm.js",
-  "unpkg": "dist/vue2-siema.min.js",
+  "name": "vue-audio-soundcloud",
+  "version": "1.0.0",
+  "description": "Vue audio soundcloud",
+  "main": "dist/vue-audio-soundcloud.umd.js",
+  "module": "dist/vue-audio-soundcloud.esm.js",
+  "unpkg": "dist/vue-audio-soundcloud.min.js",
   "scripts": {
     "build": "npm run build:browser && npm run build:es && npm run build:umd",
     "build:browser": "rollup --config build/rollup.config.browser.js",
@@ -15,10 +15,10 @@
     "devb": "nodemon --exec 'npm run build:browser' --watch src",
     "serve": "serve ./dist"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sainf/vue2-siema.git"
-  },
+  // "repository": {
+  //   "type": "git",
+  //   "url": "git+https://github.com/sainf/vue2-siema.git"
+  // },
   "keywords": [
     "vue",
     "siema",
@@ -26,15 +26,12 @@
     "carousel",
     "slider"
   ],
-  "author": "Avelino Nogueira",
+  "author": "Flavio Paroli",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sainf/vue2-siema/issues"
+    "url": "https://github.com/agrezo/vue-audio-soundcloud/issues"
   },
-  "homepage": "https://github.com/sainf/vue2-siema#readme",
-  "dependencies": {
-    "siema": "^1.5.1"
-  },
+  "homepage": "https://github.com/agrezo/vue-audio-soundcloud#readme",
   "devDependencies": {
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.3",
