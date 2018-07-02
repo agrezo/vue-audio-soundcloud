@@ -78,7 +78,7 @@ export default {
           this.isLoading = false
           this.isPlaying = true
           this.isMuted ? this.widget.setVolume(0) : this.widget.setVolume(this.volume)
-          this.$emit('onLoad', this.currentTrack.id)
+          this.$emit('on-load', this.currentTrack.id)
         }
       })
     },
@@ -113,14 +113,14 @@ export default {
     pause () {
       this.widget.pause()
       this.isPlaying = false
-      this.$emit('onPause')
+      this.$emit('on-pause')
     },
 
     play () {
       if (this.widget && Object.keys(this.currentTrack).length > 0) {
         this.widget.play()
         this.isPlaying = true
-        this.$emit('onPlay')
+        this.$emit('on-play')
       }
     },
 
@@ -239,11 +239,11 @@ export default {
       })
       this.widget.bind(SC.Widget.Events.PAUSE, () => {
         this.isPlaying = false
-        this.$emit('onPause')
+        this.$emit('on-pause')
       })
       this.widget.bind(SC.Widget.Events.PLAY, () => {
         this.isPlaying = true
-        this.$emit('onPlay')
+        this.$emit('on-play')
       })
       this.widget.bind(SC.Widget.Events.PLAY_PROGRESS, data => {
         this.progression = data.relativePosition * 100
