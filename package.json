@@ -15,10 +15,6 @@
     "devb": "nodemon --exec 'npm run build:browser' --watch src",
     "serve": "serve ./dist"
   },
-  // "repository": {
-  //   "type": "git",
-  //   "url": "git+https://github.com/sainf/vue2-siema.git"
-  // },
   "keywords": [
     "vue",
     "siema",
@@ -66,5 +62,6 @@
     "stylus-loader": "^3.0.2",
     "uglify-es": "^3.3.9",
     "vue-template-compiler": "^2.5.16"
-  }
+  },
+  "dependencies": {}
 }
