@@ -5,6 +5,9 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
+
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
     <script src="https://w.soundcloud.com/player/api.js"></script>
     <script src='vue-audio-soundcloud.min.js'></script>
@@ -14,15 +17,83 @@
         margin: 0;
         padding: 0;
       }
+      html {
+        background: #f9f9f9;
+        font-family: 'Lato', sans-serif;
+      }
       body {
-        padding: 20px;
+        padding-bottom: 100px;
       }
-      .disabled {
-        color: #f00;
+      .container {
+        width: 800px;
+        margin: auto;
       }
-      .selected {
-        color: #f00;
+      h1 {
+        font-size: 1.8rem;
+        padding-top: 50px;
+        text-align: center;
       }
+      h2 {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+        text-align: center;
+      }
+      h3 {
+        color: #aaa;
+        font-size: .9rem;
+        font-weight: 400;
+        text-align: center;
+      }
+      h4 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        margin-top: 50px;
+      }
+      
+      .track {
+        background: #fff;
+        cursor: pointer;
+        display: flex;
+        margin-bottom: 15px;
+        padding: 15px;
+        transition: all .3s ease;
+        -moz-transition: all .3s ease;
+        -webkit-transition: all .3s ease;
+      }
+      .track:hover {
+        box-shadow: 3px 3px 10px rgba(0, 0, 0, .1)
+      }
+
+      .track-cover img{
+        display: block;
+        margin-right: 15px;
+        width: 50px;
+      }
+
+      .track-artist {
+        color: #ccc;
+        font-size: .8rem;
+        margin-bottom: 2px;
+        margin-top: 6px;
+      }
+
+      .track-title {
+        font-size: .9rem;
+        font-weight: 700;
+      }
+
+      .disabled, .selected {
+        color: #ff6b81;
+      }
+
+      .player {
+        background: #eee;
+        left: 0;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }      
       .timeline {
         position: relative;
         display: flex;
@@ -76,39 +147,63 @@
 
   <body>
     <div id="app">
-      <h1>Vue audio soundcloud</h1>
-      <h2>Example of soundcloud audio player</h2>
-      <vue-audio-soundcloud :elements="{ timeline: 'timeline', volume: 'volume' }" :default-volume="60" @on-load="setNewTrack">
+      <div class="container">
+        <h1>Vue audio soundcloud</h1>
+        <h2>A Vue 2.1.0+ fully customisable player</h2>
+        <h3>Play a track to display the player</h3>
+        
+        <h4>Example 1: single track</h4>
+        <div 
+          class="track"
+          :class="{selected: current === single.id}"
+          @click="$AudioSoundcloud.load({
+            track: single,
+          })"
+        >
+          <div class="track-cover"><img :src="single.artwork_url" /></div>
+          <div>
+            <p class="track-artist">{{single.user.username}}</p>
+            <p class="track-title">{{single.title}}</p>
+          </div>
+        </div>
+  
+        <h4>Example 2: playlist</h4>
+        <div 
+          class="track"
+          v-for="(track) in playlist"
+          :key="track.id" 
+          :class="{selected: current === track.id}"
+          @click="$AudioSoundcloud.load({ track: track, list: playlist, })"
+        >
+          <div class="track-cover">
+            <img :src="track.artwork_url" />
+          </div>
+          <div>
+            <p class="track-artist">{{track.user.username}}</p>
+            <p class="track-title">{{track.title}}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Audio player -->
+      <vue-audio-soundcloud :elements="{ timeline: 'timeline', volume: 'volume' }" :default-volume="80" @load="setNewTrack" class="player">
         <template slot-scope="{currentTrack, duration, listPosition, loop, isLoop, isMuted, isPlaying, next, play, pause, previous, progression, volume}">
           <button @click="previous()" :class="{disabled: !listPosition || listPosition.first}">Prev</button>
-          <button @click="play()" v-if="!isPlaying">Play</button>
-          <button @click="pause()" v-else>Pause</button>
+          <button @click="play()" v-if="!isPlaying"><i class="material-icons">play_arrow</i></button>
+          <button @click="pause()" v-else><i class="material-icons">pause</i></button>
           <button @click="loop()">Loop: {{isLoop}}</button>
           <button @click="next()" :class="{disabled: !listPosition || listPosition.last}">Next</button>
           {{duration.current}} / {{duration.total}} {{currentTrack.title}}
-    
+      
           <div class="timeline" id="timeline">
             <div class="timeline-bar" :style="`width:${progression}%`"></div>
           </div>
-    
+      
           <div class="volume" id="volume">
             <div class="volume-bar" :style="`width:${volume}%`" :class="{muted: isMuted}"></div>
           </div>
         </template>
       </vue-audio-soundcloud>
-      <h4>Without list</h4>
-      <p @click="$AudioSoundcloud.load({
-            track: item,
-          })" v-for="(item) in withoutList" :key="item.id" :class="{selected: current === item.id}">
-        {{item.title}}
-      </p>
-      <h4>With list</h4>
-      <p @click="$AudioSoundcloud.load({
-            track: item,
-            list: withList,
-          })" v-for="(item) in withList" :key="item.id" :class="{selected: current === item.id}">
-        {{item.title}}
-      </p>
     </div>
 
     <script type="text/javascript">
@@ -118,8 +213,60 @@
           el: "#app",
           data: () => ({
             current: '',
-            withoutList: [{ "kind": "track", "id": 368897411, "created_at": "2017/12/13 10:54:13 +0000", "user_id": 103689541, "duration": 185720, "commentable": true, "state": "finished", "original_content_size": 32748702, "last_modified": "2018/01/30 20:46:54 +0000", "sharing": "public", "tag_list": "", "permalink": "baxromoff-taj-mahal-original-mix", "streamable": true, "embeddable_by": "all", "downloadable": false, "purchase_url": "http://www.tuneboost.net/track/bzKeqxAwd", "label_id": null, "purchase_title": "FREE 4 U", "genre": "melbourne", "title": "Baxromoff - Taj Mahal (Original Mix)", "description": "Absolute killer melboure tune by Baxromoff, hope you guys could show your support and share it around!! \nPlease follow and check out more of his dope tunes\n\nBaxromoff\nhttps://soundcloud.com/baxromoff", "label_name": null, "release": null, "track_type": null, "key_signature": null, "isrc": null, "video_url": null, "bpm": null, "release_year": null, "release_month": null, "release_day": null, "original_format": "wav", "license": "all-rights-reserved", "uri": "https://api.soundcloud.com/tracks/368897411", "user": { "id": 103689541, "kind": "user", "permalink": "melbourne-bounce-central", "username": "MBC", "last_modified": "2018/04/15 11:28:58 +0000", "uri": "https://api.soundcloud.com/users/103689541", "permalink_url": "http://soundcloud.com/melbourne-bounce-central", "avatar_url": "https://i1.sndcdn.com/avatars-000308723390-cuwgf7-large.jpg" }, "attachments_uri": "https://api.soundcloud.com/tracks/368897411/attachments", "permalink_url": "http://soundcloud.com/melbourne-bounce-central/baxromoff-taj-mahal-original-mix", "artwork_url": "https://i1.sndcdn.com/artworks-000269137082-jamv4o-large.jpg", "waveform_url": "https://w1.sndcdn.com/9RFbASZCGGfP_m.png", "stream_url": "https://api.soundcloud.com/tracks/368897411/stream", "playback_count": 0, "download_count": 0, "favoritings_count": 502, "comment_count": 46 }, { "kind": "track", "id": 372121283, "created_at": "2017/12/20 14:01:34 +0000", "user_id": 334899174, "duration": 179425, "commentable": true, "state": "finished", "original_content_size": 31635990, "last_modified": "2018/04/15 15:56:32 +0000", "sharing": "public", "tag_list": "", "permalink": "remixwolves", "streamable": true, "embeddable_by": "all", "downloadable": false, "purchase_url": "http://www.tuneboost.net/track/pqkcpReHd", "label_id": null, "purchase_title": null, "genre": "Dance & EDM", "title": "Selena Gomez & Marshmello - Wolves (Outloud Remix) *Supported by Matthew Ros*", "description": "We really enjoyed making our first remix , We hope you guys like it and wait for our next releases!\n\nBUY = FREE DOWNLOAD \n\nSupported by:\nMatthew Ros\n\nContact us:\nfacebook.com/outloudduo\ninstagram.com/outloudduo\n@outloudproducer\n@theoutloudradio", "label_name": null, "release": null, "track_type": null, "key_signature": null, "isrc": null, "video_url": null, "bpm": null, "release_year": 2017, "release_month": 12, "release_day": 17, "original_format": "wav", "license": "cc-by-nc-sa", "uri": "https://api.soundcloud.com/tracks/372121283", "user": { "id": 334899174, "kind": "user", "permalink": "outloudremixes", "username": "Outloud Remixes", "last_modified": "2018/01/28 09:44:55 +0000", "uri": "https://api.soundcloud.com/users/334899174", "permalink_url": "http://soundcloud.com/outloudremixes", "avatar_url": "https://i1.sndcdn.com/avatars-000366415628-n4ayps-large.jpg" }, "attachments_uri": "https://api.soundcloud.com/tracks/372121283/attachments", "permalink_url": "http://soundcloud.com/outloudremixes/remixwolves", "artwork_url": "https://i1.sndcdn.com/artworks-000272512202-nfelt3-large.jpg", "waveform_url": "https://w1.sndcdn.com/Why58NCCkbXh_m.png", "stream_url": "https://api.soundcloud.com/tracks/372121283/stream", "playback_count": 0, "download_count": 0, "favoritings_count": 196, "comment_count": 99 }, { "kind": "track", "id": 372146156, "created_at": "2017/12/20 15:17:03 +0000", "user_id": 40822846, "duration": 226999, "commentable": true, "state": "finished", "original_content_size": 80055426, "last_modified": "2018/04/06 12:16:34 +0000", "sharing": "public", "tag_list": "\"Ceryno \" \"Origins \" \"Edm \" \"Bigroom \" 2017 CRR", "permalink": "ceryno-origins", "streamable": true, "embeddable_by": "all", "downloadable": false, "purchase_url": "https://pumpyoursound.com/fangate/detail/40657-origins", "label_id": null, "purchase_title": null, "genre": "Dance & EDM", "title": "Ceryno - Origins [CRR001]", "description": "Proud to give you away for free my last track of 2017! Spent a lot of time on it so i hope you guys will like it! I'm already working on lot of collabs and solos so be ready for 2018 which will be surprising!\n \nEnjoy, Ceryno.\n\n*BUY = FREE DOWNLOAD\nThis track is a co-release with Crashed Collective.", "label_name": null, "release": null, "track_type": null, "key_signature": null, "isrc": null, "video_url": null, "bpm": null, "release_year": null, "release_month": null, "release_day": null, "original_format": "wav", "license": "all-rights-reserved", "uri": "https://api.soundcloud.com/tracks/372146156", "user": { "id": 40822846, "kind": "user", "permalink": "ceryno", "username": "Ceryno", "last_modified": "2018/04/07 19:52:08 +0000", "uri": "https://api.soundcloud.com/users/40822846", "permalink_url": "http://soundcloud.com/ceryno", "avatar_url": "https://i1.sndcdn.com/avatars-000370103915-v7dih5-large.jpg" }, "attachments_uri": "https://api.soundcloud.com/tracks/372146156/attachments", "permalink_url": "http://soundcloud.com/ceryno/ceryno-origins", "artwork_url": "https://i1.sndcdn.com/artworks-000272544347-e4sr70-large.jpg", "waveform_url": "https://w1.sndcdn.com/iTNOgBSheePF_m.png", "stream_url": "https://api.soundcloud.com/tracks/372146156/stream", "playback_count": 0, "download_count": 0, "favoritings_count": 231, "comment_count": 112 }, { "kind": "track", "id": 371262872, "created_at": "2017/12/18 17:29:35 +0000", "user_id": 125039276, "duration": 225900, "commentable": true, "state": "finished", "original_content_size": 9336294, "last_modified": "2017/12/29 15:52:47 +0000", "sharing": "public", "tag_list": "\"Electro House\" \"Big Room\" Groove EDM 303", "permalink": "pajane-radio", "streamable": true, "embeddable_by": "all", "downloadable": false, "purchase_url": "https://www.toneden.io/panthers-groove/post/pajane-radio", "label_id": null, "purchase_title": "Free Download", "genre": "PANTHER", "title": "Pajane - Radio ● Supported by LoaX ●", "description": "A warm Panther's Groove welcome back to the limelight for enormously talented German producer Pajane. Following successful Panther's Groove releases with 'Bring The Funk Back' and 'Fire', in the summer, Pajane is back on the imprint with his 303-lead electro-groove track: 'Radio'. \n\nDownload FREE: https://www.toneden.io/panthers-groove/post/pajane-radio\n\nSave on Spotify: https://open.spotify.com/track/0WEaHmlSwEn3cC9JSHrekw\n\nFollow Pajane:\nhttps://soundcloud.com/pajanemusic\nhttps://www.facebook.com/pajanemusic\nhttps://twitter.com/pajanemusic\nhttps://www.instagram.com/philip__p_/\nhttps://open.spotify.com/artist/3xur0inruYquZ8zO73xq1q\n\nFollow Panther's Groove:\nopen.spotify.com/user/x43zjmj9fxfa65thdh3xeetli\nwww.youtube.com/channel/UCwbFekB6WGIWjlPXPP_vlSg\nwww.facebook.com/panthersgroove\nSoundcloud.com/panthersgroove\nSoundcloud.com/panthersdeep\nSoundcloud.com/pantherstrap\nSoundcloud.com/panthershouse\nSoundcloud.com/panthersbasshouse\nSoundcloud.com/panthersafterparty\nSoundcloud.com/pantherslondon\nSoundcloud.com/panthersmiami\nSoundcloud.com/panthersibiza\nSoundcloud.com/pantherspacks\n\nCopyright and worldwide exclusive rights licensed to Panther's Groove Ltd - London. You must ask permission from Panther's Groove prior to uploading. Unauthorised distribution is strictly prohibited.", "label_name": "Panther's Groove", "release": null, "track_type": null, "key_signature": null, "isrc": null, "video_url": null, "bpm": null, "release_year": 2017, "release_month": 12, "release_day": 18, "original_format": "mp3", "license": "all-rights-reserved", "uri": "https://api.soundcloud.com/tracks/371262872", "user": { "id": 125039276, "kind": "user", "permalink": "panthersgroove", "username": "Panther's Groove", "last_modified": "2018/04/16 15:25:34 +0000", "uri": "https://api.soundcloud.com/users/125039276", "permalink_url": "http://soundcloud.com/panthersgroove", "avatar_url": "https://i1.sndcdn.com/avatars-000430285224-puou72-large.jpg" }, "attachments_uri": "https://api.soundcloud.com/tracks/371262872/attachments", "permalink_url": "http://soundcloud.com/panthersgroove/pajane-radio", "artwork_url": "https://i1.sndcdn.com/artworks-000271511606-jky3ip-large.jpg", "waveform_url": "https://w1.sndcdn.com/AzbqFU0wH1Yx_m.png", "stream_url": "https://api.soundcloud.com/tracks/371262872/stream", "playback_count": 0, "download_count": 0, "favoritings_count": 556, "comment_count": 40 }, { "kind": "track", "id": 342765224, "created_at": "2017/09/17 16:26:49 +0000", "user_id": 9616421, "duration": 283741, "commentable": true, "state": "finished", "original_content_size": 11346617, "last_modified": "2018/02/24 15:54:33 +0000", "sharing": "public", "tag_list": "Aceaxe \"Patrick Moreno\" \"Jonny Rose\" \"CHasing Love\"", "permalink": "aceaxe-x-patrick-moreno-ft-jonny-rose-chasing-love-original-mix", "streamable": true, "embeddable_by": "all", "downloadable": false, "purchase_url": "http://www.tuneboost.net/track/YTkHzeNAk", "label_id": null, "purchase_title": "Stream/Download", "genre": "Progressive House", "title": "Aceaxe X Patrick Moreno Ft. Jonny Rose - Chasing Love (Original Mix)", "description": "Official Videoclip- https://youtu.be/cXhtPK-mIWk\n\n● Follow Patrick Moreno:\nfacebook.com/patrickmorenoofficial\ntwitter.com/djsmoreno \n@moreno-official \ninstagram.com/patrick_moreno_", "label_name": null, "release": null, "track_type": null, "key_signature": null, "isrc": null, "video_url": null, "bpm": null, "release_year": null, "release_month": null, "release_day": null, "original_format": "mp3", "license": "all-rights-reserved", "uri": "https://api.soundcloud.com/tracks/342765224", "user": { "id": 9616421, "kind": "user", "permalink": "moreno-official", "username": "Patrick Moreno", "last_modified": "2018/03/04 17:47:46 +0000", "uri": "https://api.soundcloud.com/users/9616421", "permalink_url": "http://soundcloud.com/moreno-official", "avatar_url": "https://i1.sndcdn.com/avatars-000070811360-svhymf-large.jpg" }, "attachments_uri": "https://api.soundcloud.com/tracks/342765224/attachments", "permalink_url": "http://soundcloud.com/moreno-official/aceaxe-x-patrick-moreno-ft-jonny-rose-chasing-love-original-mix", "artwork_url": "https://i1.sndcdn.com/artworks-000270246599-1josf3-large.jpg", "waveform_url": "https://w1.sndcdn.com/8brA2WrFENU5_m.png", "stream_url": "https://api.soundcloud.com/tracks/342765224/stream", "playback_count": 0, "download_count": 0, "favoritings_count": 493, "comment_count": 77 }, { "kind": "track", "id": 370820765, "created_at": "2017/12/17 18:07:37 +0000", "user_id": 276045140, "duration": 170830, "commentable": true, "state": "finished", "original_content_size": 6830568, "last_modified": "2018/04/09 19:11:41 +0000", "sharing": "public", "tag_list": "", "permalink": "psr007", "streamable": true, "embeddable_by": "all", "downloadable": false, "purchase_url": "https://www.slammes.com/gate/3340", "label_id": null, "purchase_title": "FREE EXTENDED MIX💥💣", "genre": "Dance & EDM", "title": "Pharien - Infernal", "description": "Our newest release by Pharien!!\nDon't miss to check him out!\n\n@iampharien\nhttps://twitter.com/ItsRealPharien", "label_name": null, "release": null, "track_type": null, "key_signature": null, "isrc": null, "video_url": null, "bpm": null, "release_year": null, "release_month": null, "release_day": null, "original_format": "mp3", "license": "all-rights-reserved", "uri": "https://api.soundcloud.com/tracks/370820765", "user": { "id": 276045140, "kind": "user", "permalink": "pinkshrimprecords", "username": "Pink Shrimp Records", "last_modified": "2017/12/17 18:10:54 +0000", "uri": "https://api.soundcloud.com/users/276045140", "permalink_url": "http://soundcloud.com/pinkshrimprecords", "avatar_url": "https://i1.sndcdn.com/avatars-000367403639-19zzg0-large.jpg" }, "attachments_uri": "https://api.soundcloud.com/tracks/370820765/attachments", "permalink_url": "http://soundcloud.com/pinkshrimprecords/psr007", "artwork_url": "https://i1.sndcdn.com/artworks-000271110068-qxkyna-large.jpg", "waveform_url": "https://w1.sndcdn.com/UDs4aRDX7zJs_m.png", "stream_url": "https://api.soundcloud.com/tracks/370820765/stream", "playback_count": 0, "download_count": 0, "favoritings_count": 384, "comment_count": 162 }],
-            withList: [{ "kind": "track", "id": 215590919, "created_at": "2015/07/20 21:44:50 +0000", "user_id": 55204484, "duration": 289750, "commentable": true, "state": "finished", "original_content_size": 11588009, "last_modified": "2018/03/02 10:03:12 +0000", "sharing": "public", "tag_list": "BlasterJaxx \"Ghost in the Machine\"", "permalink": "blasterjaxx-moti-ft-jonathan-mendelsohn-ghost-in-the-machine-joey-steel-bootleg", "streamable": true, "embeddable_by": "all", "downloadable": false, "purchase_url": "http://www.supportify.ch/dl/?track=2269", "label_id": null, "purchase_title": "Free Download", "genre": "Festival Bootleg", "title": "Blasterjaxx & MOTi  - Ghost In The Machine (Joey Steel Bootleg) *Played By BlasterJaxx at EDC 2015*", "description": "Vote Me In The TOP 100 : \" http://www.edmlead.com/#!top100/c1d94 \"\n\nSupported By:\nJuicy M \"JuicyLand #113\"\nBlasterJaxx: \" Maxximize On Air #073 \"\nEDC Orlando 2015: \" https://www.mixcloud.com/insomniacevents/blasterjaxx-edc-orlando-2015-mix/ \"\n\n\nInfo:\n\n\nSupport the artist:\nhttp://pro.beatport.com/track/ghost-in-the-machine-feat-jonathan-mendelsohn-original-mix/6760759", "label_name": null, "release": null, "track_type": null, "key_signature": null, "isrc": null, "video_url": null, "bpm": null, "release_year": null, "release_month": null, "release_day": null, "original_format": "mp3", "license": "all-rights-reserved", "uri": "https://api.soundcloud.com/tracks/215590919", "user": { "id": 55204484, "kind": "user", "permalink": "joeysteel", "username": "Joey Steel", "last_modified": "2018/04/13 14:18:59 +0000", "uri": "https://api.soundcloud.com/users/55204484", "permalink_url": "http://soundcloud.com/joeysteel", "avatar_url": "https://i1.sndcdn.com/avatars-000326742868-n1cd1z-large.jpg" }, "attachments_uri": "https://api.soundcloud.com/tracks/215590919/attachments", "permalink_url": "http://soundcloud.com/joeysteel/blasterjaxx-moti-ft-jonathan-mendelsohn-ghost-in-the-machine-joey-steel-bootleg", "artwork_url": "https://i1.sndcdn.com/artworks-000123842528-k283ug-large.jpg", "waveform_url": "https://w1.sndcdn.com/sjXmjFz4Rj8s_m.png", "stream_url": "https://api.soundcloud.com/tracks/215590919/stream", "playback_count": 0, "download_count": 50, "favoritings_count": 4166, "comment_count": 169 }, { "kind": "track", "id": 228061091, "created_at": "2015/10/12 15:30:32 +0000", "user_id": 55204484, "duration": 229480, "commentable": true, "state": "finished", "original_content_size": 9177475, "last_modified": "2017/10/18 17:15:49 +0000", "sharing": "public", "tag_list": "", "permalink": "calibra-dolls-joey-steel-beschner-edit", "streamable": true, "embeddable_by": "all", "downloadable": false, "purchase_url": "http://supportify.ch/dl/?track=7088", "label_id": null, "purchase_title": "Free Download", "genre": "Dark Room", "title": "Calibra - Dolls (Joey Steel & Beschner Remix)", "description": "●Feedback From:\n✘DJsFrom : \"very cooooool! love it!\"\n\n●Support : @CalibraOfficial\n●Support : @Beschner\n\n●Free Download : | supportify.ch/dl/?track=7088 |\n●Alternative Link : | http://bit.ly/1L95Ia8 |\n●YouTube Video : | http://bit.ly/1ONKiU1 |", "label_name": null, "release": null, "track_type": null, "key_signature": null, "isrc": null, "video_url": null, "bpm": null, "release_year": null, "release_month": null, "release_day": null, "original_format": "mp3", "license": "all-rights-reserved", "uri": "https://api.soundcloud.com/tracks/228061091", "user": { "id": 55204484, "kind": "user", "permalink": "joeysteel", "username": "Joey Steel", "last_modified": "2018/04/13 14:18:59 +0000", "uri": "https://api.soundcloud.com/users/55204484", "permalink_url": "http://soundcloud.com/joeysteel", "avatar_url": "https://i1.sndcdn.com/avatars-000326742868-n1cd1z-large.jpg" }, "attachments_uri": "https://api.soundcloud.com/tracks/228061091/attachments", "permalink_url": "http://soundcloud.com/joeysteel/calibra-dolls-joey-steel-beschner-edit", "artwork_url": "https://i1.sndcdn.com/artworks-000132477116-mrtos8-large.jpg", "waveform_url": "https://w1.sndcdn.com/xR1iris83Rjn_m.png", "stream_url": "https://api.soundcloud.com/tracks/228061091/stream", "playback_count": 0, "download_count": 0, "favoritings_count": 226, "comment_count": 97 }, { "kind": "track", "id": 242550467, "created_at": "2016/01/18 13:57:45 +0000", "user_id": 55204484, "duration": 226031, "commentable": true, "state": "finished", "original_content_size": 39858998, "last_modified": "2017/10/21 18:49:05 +0000", "sharing": "public", "tag_list": "", "permalink": "linka-mondellog-olly-james-red-zone-joey-steel-bootleg", "streamable": true, "embeddable_by": "all", "downloadable": false, "purchase_url": "http://supportify.ch/dl/?track=16136", "label_id": null, "purchase_title": "Free Download", "genre": "Red Zone", "title": "Linka & Mondello'G, Olly James - Red Zone (Joey Steel Bootleg)", "description": "Hei Guys i'm back with a new Bootleg! This time i did a bootleg of an amazing track called \"Red Zone\" by Linka & Mondello, Olly James. Hope You Like it!\n\n\nSupported By:\nLinka & Mondello'G\nOlly James\n\nSocial:\nLinka & Mondello'G: \nSC: @LinkaAndMondelloG\nFacebook:  www.on.fb.me/1ne9Le5\n\nOlly JameS:\nSoundCloud: @OllyJamesMusic\nFacebook: www.facebook.com/OllyJamesmusic\nTwitter: twitter.com/OllyJames_1\nInstagram: instagram.com/ollyjames1\n\nJoey Steel:\nSoundCloud: @joeysteel\nTwitter: twitter.com/JoeySteelMusic\nInstagram: instagram.com/joeysteelmusic/\nFacebook:  www.on.fb.me/1WmVNCk\n", "label_name": null, "release": null, "track_type": null, "key_signature": null, "isrc": null, "video_url": null, "bpm": null, "release_year": null, "release_month": null, "release_day": null, "original_format": "wav", "license": "all-rights-reserved", "uri": "https://api.soundcloud.com/tracks/242550467", "user": { "id": 55204484, "kind": "user", "permalink": "joeysteel", "username": "Joey Steel", "last_modified": "2018/04/13 14:18:59 +0000", "uri": "https://api.soundcloud.com/users/55204484", "permalink_url": "http://soundcloud.com/joeysteel", "avatar_url": "https://i1.sndcdn.com/avatars-000326742868-n1cd1z-large.jpg" }, "attachments_uri": "https://api.soundcloud.com/tracks/242550467/attachments", "permalink_url": "http://soundcloud.com/joeysteel/linka-mondellog-olly-james-red-zone-joey-steel-bootleg", "artwork_url": "https://i1.sndcdn.com/artworks-000145126404-xzwwo9-large.jpg", "waveform_url": "https://w1.sndcdn.com/z07BX5P0cGbt_m.png", "stream_url": "https://api.soundcloud.com/tracks/242550467/stream", "playback_count": 0, "download_count": 0, "favoritings_count": 253, "comment_count": 103 }, { "kind": "track", "id": 244895072, "created_at": "2016/02/01 15:31:14 +0000", "user_id": 55204484, "duration": 290717, "commentable": true, "state": "finished", "original_content_size": 11626649, "last_modified": "2017/12/29 11:29:36 +0000", "sharing": "public", "tag_list": "", "permalink": "3rd-prototype-ft-meg-dia-monster-joey-steel-doublemask-remix", "streamable": true, "embeddable_by": "all", "downloadable": false, "purchase_url": "http://www.edmlead.com/#!electro-house-21-30/hybrd", "label_id": null, "purchase_title": "Free Download", "genre": "Festival Remix", "title": "3rd Prototype ft Meg & Dia - Monster (Joey Steel & Dankø Remix)", "description": "Here's our official remix of \"Monster\" by 3rd Prototype!\n\nHope you like it!\n\n\nFeedback By:\n@OllyJamesMusic \"Nice Drop!\"\nSupported By:\n@3rdPrototype\n@OfficialCorvo2\n@JustinMylo\n", "label_name": null, "release": null, "track_type": null, "key_signature": null, "isrc": null, "video_url": null, "bpm": null, "release_year": null, "release_month": null, "release_day": null, "original_format": "mp3", "license": "all-rights-reserved", "uri": "https://api.soundcloud.com/tracks/244895072", "user": { "id": 55204484, "kind": "user", "permalink": "joeysteel", "username": "Joey Steel", "last_modified": "2018/04/13 14:18:59 +0000", "uri": "https://api.soundcloud.com/users/55204484", "permalink_url": "http://soundcloud.com/joeysteel", "avatar_url": "https://i1.sndcdn.com/avatars-000326742868-n1cd1z-large.jpg" }, "attachments_uri": "https://api.soundcloud.com/tracks/244895072/attachments", "permalink_url": "http://soundcloud.com/joeysteel/3rd-prototype-ft-meg-dia-monster-joey-steel-doublemask-remix", "artwork_url": "https://i1.sndcdn.com/artworks-000145450416-wskq10-large.jpg", "waveform_url": "https://w1.sndcdn.com/pIDE0H2ckj6B_m.png", "stream_url": "https://api.soundcloud.com/tracks/244895072/stream", "playback_count": 0, "download_count": 0, "favoritings_count": 643, "comment_count": 201 }],
+            display: false,
+            single: { "id": 201922393, "duration": 166598, "title": "Sometime (feat. Brasstracks)", "uri": "https://api.soundcloud.com/tracks/201922393", "user": { "username": "Yung Bae", }, "artwork_url": "https://i1.sndcdn.com/artworks-000165410685-mu11g2-large.jpg", },
+            playlist: [
+              {
+                "id": 259855403,
+                "duration": 244110,
+                "title": "Childish Gambino - Sober (Oliver Nelson Remix)",
+                "uri": "https://api.soundcloud.com/tracks/259855403",
+                "user": {
+                  "username": "Perfect Havoc Mixtapes",
+                },
+                "artwork_url": "https://i1.sndcdn.com/artworks-000158893822-89kr8d-large.jpg",
+              },
+              {
+                "id": 154763550,
+                "duration": 208006,
+                "title": "Feel Your Love",
+                "uri": "https://api.soundcloud.com/tracks/154763550",
+                "user": {
+                  "username": "Falqo (Official)",
+                },
+                "artwork_url": "https://i1.sndcdn.com/artworks-000082621059-c86hus-large.jpg",
+              },
+              {
+                "id": 263201308,
+                "duration": 215295,
+                "title": "Satin Jackets Feat. Scavenger Hunt - Feel Good (Cavego Remix)",
+                "uri": "https://api.soundcloud.com/tracks/263201308",
+                "user": {
+                  "username": "Cavego",
+                },
+                "artwork_url": "https://i1.sndcdn.com/artworks-000161983165-zdz5at-large.jpg",
+              },
+              {
+                "id": 252065779,
+                "duration": 273266,
+                "title": "Falqo - Across The Sea",
+                "uri": "https://api.soundcloud.com/tracks/252065779",
+                "user": {
+                  "username": "Surfin Wavs",
+                },
+                "artwork_url": "https://i1.sndcdn.com/artworks-000151060956-ux6t8h-large.jpg",
+              },
+              {
+                "id": 157033536,
+                "duration": 236195,
+                "title": "Sam Smith - Stay With Me (Throttle Remix)",
+                "uri": "https://api.soundcloud.com/tracks/157033536",
+                "user": {
+                  "username": "EARMILK",
+                },
+                "artwork_url": "https://i1.sndcdn.com/artworks-000084075014-o9cb5q-large.jpg",
+              }
+            ],
           }),
           methods: {
             setNewTrack(id) {
