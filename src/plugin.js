@@ -18,7 +18,7 @@ export default {
     },
   },
   data: () => ({
-    currentTrack: '',
+    currentTrack: {},
     duration: {
       current: '00:00',
       total: '--:--',
