@@ -2,4 +2,5 @@
 
 This project is currently in Work In Progress
 
-data needed from soundcloud : id / uri
+[Demo page](https://agrezo.github.io/vue-audio-soundcloud/)
+

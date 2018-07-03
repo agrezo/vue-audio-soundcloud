@@ -18,7 +18,7 @@ export default {
     },
   },
   data: () => ({
-    currentTrack: {},
+    currentTrack: '',
     duration: {
       current: '00:00',
       total: '--:--',
@@ -141,6 +141,30 @@ export default {
       }
     },
 
+    seekBackward () {
+      this.widget.getPosition(position => {
+        if (this.seekToShortcutAvailable) {
+          position >= 5000 ? this.widget.seekTo(position - 5000) : this.widget.seekTo(0)
+          this.seekToShortcutAvailable = false
+          setTimeout(() => {
+            this.seekToShortcutAvailable = true
+          }, 200);
+        }
+      })
+    },
+
+    seekForward () {
+      this.widget.getPosition(position => {
+        if (this.seekToShortcutAvailable) {
+          this.widget.seekTo(position + 5000)
+          this.seekToShortcutAvailable = false
+          setTimeout(() => {
+            this.seekToShortcutAvailable = true
+          }, 200);
+        }
+      })
+    },
+
     setListPosition (position) {
       if (!this.listPosition) this.listPosition = {}
       this.listPosition.current = position !== undefined ? position : this.listPosition.current
@@ -200,17 +224,11 @@ export default {
       else if (key === 39 && e.shiftKey) { // SHIFT + R-ARROW
         this.next()
       }
-      else if (key === 37 || key === 39) {  // L-ARROW
-        this.widget.getPosition(position => {
-          if (this.seekToShortcutAvailable) {
-            if (key === 37) position >= 5000 ? this.widget.seekTo(position - 5000) : this.widget.seekTo(0)
-            if (key === 39) this.widget.seekTo(position + 5000)
-            this.seekToShortcutAvailable = false
-            setTimeout(() => {
-              this.seekToShortcutAvailable = true
-            }, 200);
-          }
-        })
+      else if (key === 37) {  // L-ARROW
+        this.seekBackward()
+      }
+      else if (key === 39) {  // R-ARROW
+        this.seekForward()
       }
       else if (key === 38 && e.shiftKey) { // SHIFT + U-ARROW
         (this.volume <= 95) ? this.volume += 5 : this.volume = 100
@@ -224,7 +242,9 @@ export default {
   },
   mounted () {
     Vue.prototype.$AudioSoundcloud = {
-      load: params => this.load(params)
+      load: params => this.load(params),
+      pause: () => this.pause(),
+      play: () => this.play(),
     }
 
     this.volume = this.defaultVolume
