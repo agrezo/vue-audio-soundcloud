@@ -15,8 +15,8 @@
       pause,
       previous,
       progression,
-      seekBackward,
-      seekForward,
+      fastBackward,
+      fastForward,
       volume,
     }"></slot>
   </div>

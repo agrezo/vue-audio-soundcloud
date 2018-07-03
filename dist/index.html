@@ -58,7 +58,7 @@
 
       <!-- Audio player -->
       <vue-audio-soundcloud :elements="{ timeline: 'timeline', volume: 'volume' }" :default-volume="80" @load="setNewTrack" class="player">
-        <template slot-scope="{currentTrack, duration, listPosition, loop, isLoop, isMuted, isPlaying, next, play, pause, previous, progression, seekBackward, seekForward, volume}" class="blabla">
+        <template slot-scope="{currentTrack, duration, listPosition, loop, isLoop, isMuted, isPlaying, next, play, pause, previous, progression, fastBackward, fastForward, volume}" class="blabla">
           <div class="player-container">
             <div class="player-infos"></div>
             <div class="player-timeline">
@@ -70,11 +70,11 @@
             </div>
             <div class="player-actions">
               <button @click="previous()" :class="{disabled: !listPosition || listPosition.first}"><i class="material-icons">skip_previous</i></button>
-              <button @click="seekBackward()"><i class="material-icons">fast_rewind</i></button>
+              <button @click="fastBackward()"><i class="material-icons">fast_rewind</i></button>
               <button @click="play()" v-if="!isPlaying"><i class="material-icons">play_arrow</i></button>
               <button @click="pause()" v-else><i class="material-icons">pause</i></button>
               <button @click="loop()"><i class="material-icons">loop</i></button>
-              <button @click="seekForward()"><i class="material-icons">fast_forward</i></button>
+              <button @click="fastForward()"><i class="material-icons">fast_forward</i></button>
               <button @click="next()" :class="{disabled: !listPosition || listPosition.last}"><i class="material-icons">skip_next</i></button>
             
               <div class="volume" id="volume">

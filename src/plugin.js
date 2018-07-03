@@ -141,7 +141,7 @@ export default {
       }
     },
 
-    seekBackward () {
+    fastBackward () {
       this.widget.getPosition(position => {
         if (this.seekToShortcutAvailable) {
           position >= 5000 ? this.widget.seekTo(position - 5000) : this.widget.seekTo(0)
@@ -153,7 +153,7 @@ export default {
       })
     },
 
-    seekForward () {
+    fastForward () {
       this.widget.getPosition(position => {
         if (this.seekToShortcutAvailable) {
           this.widget.seekTo(position + 5000)
@@ -225,10 +225,10 @@ export default {
         this.next()
       }
       else if (key === 37) {  // L-ARROW
-        this.seekBackward()
+        this.fastBackward()
       }
       else if (key === 39) {  // R-ARROW
-        this.seekForward()
+        this.fastForward()
       }
       else if (key === 38 && e.shiftKey) { // SHIFT + U-ARROW
         (this.volume <= 95) ? this.volume += 5 : this.volume = 100
