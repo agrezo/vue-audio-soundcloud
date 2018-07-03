@@ -83,19 +83,58 @@ h4 {
 
 .player-container {
   display: flex;
+  margin: auto;
+  max-width: 1280px;
+}
+
+.player-button {
+  background: transparent;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+}
+.player-button:focus {
+  outline: none;
 }
 
 .player-infos {
+  align-items: center;
+  display: flex;
   flex: 1;
+  min-width: 0;
 }
+
+.player-cover {
+  display: block;
+  height: 40px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.player-text {
+  flex: 1;
+  min-width: 0;
+}
+.player-title {
+  font-size: .75rem;
+  color: #fff;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.player-artist {
+  font-size: .75rem;
+  color: #aaa;
+}
+
 
 .player-timeline {
   align-items: center;
   display: flex;
   flex: 2;
-  padding: 0 25px;
+  padding: 0 20px;
 }
-
 .player-timeline p {
   color: #fff;
   font-size: .75rem;
@@ -130,10 +169,12 @@ h4 {
 }
 
 .player-actions {
+  align-items: center;
   display: flex;
   flex: 1;
+  justify-content: space-between;
+  padding-right: 10px;
 }
-
 .volume {
   align-items: center;
   display: flex;
@@ -159,4 +200,3 @@ h4 {
 .volume-bar.muted {
   width: 0 !important;
 }
-

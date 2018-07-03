@@ -54,13 +54,19 @@
         </div>
       </div>
 
-      Display source code of the player
+      <!-- Display source code of the player -->
 
       <!-- Audio player -->
       <vue-audio-soundcloud :elements="{ timeline: 'timeline', volume: 'volume' }" :default-volume="80" @load="setNewTrack" class="player">
         <template slot-scope="{currentTrack, duration, listPosition, loop, isLoop, isMuted, isPlaying, next, play, pause, previous, progression, fastBackward, fastForward, volume}" class="blabla">
           <div class="player-container">
-            <div class="player-infos"></div>
+            <div class="player-infos">
+              <img :src="currentTrack.artwork_url" class="player-cover" />
+              <div class="player-text">
+                <p class="player-title">{{currentTrack.title}}</p>
+                <p class="player-artist" v-if="currentTrack.user">{{currentTrack.user.username}}</p>
+              </div>
+            </div>
             <div class="player-timeline">
               <p>{{duration.current}}</p>
               <div class="timeline" id="timeline">
@@ -69,17 +75,18 @@
               <p>{{duration.total}}</p>
             </div>
             <div class="player-actions">
-              <button @click="previous()" :class="{disabled: !listPosition || listPosition.first}"><i class="material-icons">skip_previous</i></button>
-              <button @click="fastBackward()"><i class="material-icons">fast_rewind</i></button>
-              <button @click="play()" v-if="!isPlaying"><i class="material-icons">play_arrow</i></button>
-              <button @click="pause()" v-else><i class="material-icons">pause</i></button>
-              <button @click="loop()"><i class="material-icons">loop</i></button>
-              <button @click="fastForward()"><i class="material-icons">fast_forward</i></button>
-              <button @click="next()" :class="{disabled: !listPosition || listPosition.last}"><i class="material-icons">skip_next</i></button>
+              <button class="player-button" @click="previous()" :class="{disabled: !listPosition || listPosition.first}"><i class="material-icons">skip_previous</i></button>
+              <button class="player-button" @click="fastBackward()"><i class="material-icons">fast_rewind</i></button>
+              <button class="player-button" @click="play()" v-if="!isPlaying"><i class="material-icons">play_arrow</i></button>
+              <button class="player-button" @click="pause()" v-else><i class="material-icons">pause</i></button>
+              <button class="player-button" @click="fastForward()"><i class="material-icons">fast_forward</i></button>
+              <button class="player-button" @click="next()" :class="{disabled: !listPosition || listPosition.last}"><i class="material-icons">skip_next</i></button>
+              <button class="player-button" @click="loop()"><i class="material-icons">loop</i></button>
+              <button class="player-button" @click="loop()"><i class="material-icons">volume_up</i></button>
             
-              <div class="volume" id="volume">
+              <!-- <div class="volume" id="volume">
                 <div class="volume-bar" :style="`width:${volume}%`" :class="{muted: isMuted}"></div>
-              </div>
+              </div> -->
             </div>
           </div>
         </template>
