@@ -5,152 +5,21 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <link href="index.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
     <script src="https://w.soundcloud.com/player/api.js"></script>
     <script src='vue-audio-soundcloud.min.js'></script>
-    
-    <style type="text/css">
-      * {
-        margin: 0;
-        padding: 0;
-      }
-      html {
-        background: #f9f9f9;
-        font-family: 'Lato', sans-serif;
-      }
-      body {
-        padding-bottom: 100px;
-      }
-      .container {
-        width: 800px;
-        margin: auto;
-      }
-      h1 {
-        font-size: 1.8rem;
-        padding-top: 50px;
-        text-align: center;
-      }
-      h2 {
-        font-size: 1.2rem;
-        margin-bottom: 8px;
-        text-align: center;
-      }
-      h3 {
-        color: #aaa;
-        font-size: .9rem;
-        font-weight: 400;
-        text-align: center;
-      }
-      h4 {
-        font-size: 1.1rem;
-        font-weight: 700;
-        margin-bottom: 20px;
-        margin-top: 50px;
-      }
-      
-      .track {
-        background: #fff;
-        cursor: pointer;
-        display: flex;
-        margin-bottom: 15px;
-        padding: 15px;
-        transition: all .3s ease;
-        -moz-transition: all .3s ease;
-        -webkit-transition: all .3s ease;
-      }
-      .track:hover {
-        box-shadow: 3px 3px 10px rgba(0, 0, 0, .1)
-      }
-
-      .track-cover img{
-        display: block;
-        margin-right: 15px;
-        width: 50px;
-      }
-
-      .track-artist {
-        color: #ccc;
-        font-size: .8rem;
-        margin-bottom: 2px;
-        margin-top: 6px;
-      }
-
-      .track-title {
-        font-size: .9rem;
-        font-weight: 700;
-      }
-
-      .disabled, .selected {
-        color: #ff6b81;
-      }
-
-      .player {
-        background: #eee;
-        left: 0;
-        position: fixed;
-        bottom: 0;
-        width: 100%;
-      }      
-      .timeline {
-        position: relative;
-        display: flex;
-        align-items: center;
-        width: 350px;
-        height: 40px;
-      }
-      .timeline:before {
-        content: "";
-        display: block;
-        background: #ccc;
-        width: 100%;
-        height: 8px;
-        border-radius: 100px;
-      }
-      .timeline-bar {
-        background: #00f;
-        border-radius: 100px;
-        height: 8px;
-        left: 0;
-        position: absolute;
-      }
-      .volume {
-        position: relative;
-        display: flex;
-        align-items: center;
-        width: 350px;
-        height: 40px;
-      }
-      .volume:before {
-        content: "";
-        display: block;
-        background: #ccc;
-        width: 100%;
-        height: 8px;
-        border-radius: 100px;
-      }
-      .volume-bar {
-        background: #008000;
-        border-radius: 100px;
-        height: 8px;
-        left: 0;
-        position: absolute;
-      }
-      .volume-bar.muted {
-        width: 0 !important;
-      }
-      
-    </style>
   </head>
 
   <body>
     <div id="app">
       <div class="container">
         <h1>Vue audio soundcloud</h1>
-        <h2>A Vue 2.1.0+ fully customisable player</h2>
-        <h3>Play a track to display the player</h3>
+        <h2>A Vue 2.1.0+ audio player fully customisable</h2>
+        <h3>Play a track to show the player</h3>
         
         <h4>Example 1: single track</h4>
         <div 
@@ -185,22 +54,33 @@
         </div>
       </div>
 
+      Display source code of the player
+
       <!-- Audio player -->
       <vue-audio-soundcloud :elements="{ timeline: 'timeline', volume: 'volume' }" :default-volume="80" @load="setNewTrack" class="player">
-        <template slot-scope="{currentTrack, duration, listPosition, loop, isLoop, isMuted, isPlaying, next, play, pause, previous, progression, volume}">
-          <button @click="previous()" :class="{disabled: !listPosition || listPosition.first}">Prev</button>
-          <button @click="play()" v-if="!isPlaying"><i class="material-icons">play_arrow</i></button>
-          <button @click="pause()" v-else><i class="material-icons">pause</i></button>
-          <button @click="loop()">Loop: {{isLoop}}</button>
-          <button @click="next()" :class="{disabled: !listPosition || listPosition.last}">Next</button>
-          {{duration.current}} / {{duration.total}} {{currentTrack.title}}
-      
-          <div class="timeline" id="timeline">
-            <div class="timeline-bar" :style="`width:${progression}%`"></div>
-          </div>
-      
-          <div class="volume" id="volume">
-            <div class="volume-bar" :style="`width:${volume}%`" :class="{muted: isMuted}"></div>
+        <template slot-scope="{currentTrack, duration, listPosition, loop, isLoop, isMuted, isPlaying, next, play, pause, previous, progression, seekBackward, seekForward, volume}" class="blabla">
+          <div class="player-container">
+            <div class="player-infos"></div>
+            <div class="player-timeline">
+              <p>{{duration.current}}</p>
+              <div class="timeline" id="timeline">
+                <div class="timeline-bar" :style="`width:${progression}%`"></div>
+              </div>
+              <p>{{duration.total}}</p>
+            </div>
+            <div class="player-actions">
+              <button @click="previous()" :class="{disabled: !listPosition || listPosition.first}"><i class="material-icons">skip_previous</i></button>
+              <button @click="seekBackward()"><i class="material-icons">fast_rewind</i></button>
+              <button @click="play()" v-if="!isPlaying"><i class="material-icons">play_arrow</i></button>
+              <button @click="pause()" v-else><i class="material-icons">pause</i></button>
+              <button @click="loop()"><i class="material-icons">loop</i></button>
+              <button @click="seekForward()"><i class="material-icons">fast_forward</i></button>
+              <button @click="next()" :class="{disabled: !listPosition || listPosition.last}"><i class="material-icons">skip_next</i></button>
+            
+              <div class="volume" id="volume">
+                <div class="volume-bar" :style="`width:${volume}%`" :class="{muted: isMuted}"></div>
+              </div>
+            </div>
           </div>
         </template>
       </vue-audio-soundcloud>

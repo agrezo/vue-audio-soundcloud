@@ -1,0 +1,162 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+html {
+  background: #f9f9f9;
+  font-family: 'Lato', sans-serif;
+}
+body {
+  padding-bottom: 100px;
+}
+.container {
+  width: 800px;
+  margin: auto;
+}
+h1 {
+  font-size: 1.8rem;
+  margin-bottom: 4px;
+  padding-top: 50px;
+  text-align: center;
+}
+h2 {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  text-align: center;
+}
+h3 {
+  color: #aaa;
+  font-size: .9rem;
+  font-weight: 400;
+  text-align: center;
+}
+h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  margin-top: 50px;
+}
+
+/* Track element style */
+.track {
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  margin-bottom: 15px;
+  padding: 15px;
+  transition: all .3s ease;
+  -moz-transition: all .3s ease;
+  -webkit-transition: all .3s ease;
+}
+.track:hover {
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, .1)
+}
+.track-cover img{
+  display: block;
+  margin-right: 15px;
+  width: 50px;
+}
+.track-artist {
+  color: #ccc;
+  font-size: .8rem;
+  margin-bottom: 2px;
+  margin-top: 6px;
+}
+.track-title {
+  font-size: .9rem;
+  font-weight: 700;
+}
+
+.disabled, .selected {
+  color: #ff6b81;
+}
+
+/* Player style */
+.player {
+  background: #0F0F0F;
+  bottom: 0;
+  height: 60px;
+  left: 0;
+  position: fixed;
+  width: 100%;
+}     
+
+.player-container {
+  display: flex;
+}
+
+.player-infos {
+  flex: 1;
+}
+
+.player-timeline {
+  align-items: center;
+  display: flex;
+  flex: 2;
+  padding: 0 25px;
+}
+
+.player-timeline p {
+  color: #fff;
+  font-size: .75rem;
+  line-height: .75rem;
+  opacity: .4;
+  padding: 0 14px;
+}
+
+.timeline {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  flex: 1;
+  height: 100%;
+  position: relative;
+}
+.timeline:before {
+  background: #fff;
+  border-radius: 100px;
+  content: "";
+  display: block;
+  height: 2px;
+  opacity: .2;
+  width: 100%;
+}
+.timeline-bar {
+  background: #fff;
+  border-radius: 100px;
+  height: 2px;
+  left: 0;
+  position: absolute;
+}
+
+.player-actions {
+  display: flex;
+  flex: 1;
+}
+
+.volume {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  height: 40px;
+  position: relative;
+}
+.volume:before {
+  content: "";
+  display: block;
+  background: #ccc;
+  width: 100%;
+  height: 3px;
+  border-radius: 100px;
+}
+.volume-bar {
+  background: #008000;
+  border-radius: 100px;
+  height: 3px;
+  left: 0;
+  position: absolute;
+}
+.volume-bar.muted {
+  width: 0 !important;
+}
+
