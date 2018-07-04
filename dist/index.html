@@ -56,7 +56,7 @@
 
       <!-- Audio player -->
       <vue-audio-soundcloud :elements="{ timeline: 'timeline', volume: 'volume' }" :default-volume="80" @load="setNewTrack" class="player" v-if="display">
-        <template slot-scope="{currentTrack, duration, listPosition, loop, isLoop, isMuted, isPlaying, next, play, pause, previous, progression, fastBackward, fastForward, volume}" class="blabla">
+        <template slot-scope="{currentTrack, duration, listPosition, loop, isLoop, isMuted, isPlaying, mute, next, play, pause, previous, progression, fastBackward, fastForward, unmute, volume}" class="blabla">
           <div class="player-container">
             <div class="player-infos">
               <img :src="currentTrack.artwork_url" class="player-cover" />
@@ -81,7 +81,8 @@
               <button class="player-button" @click="next()" :class="{disabled: !listPosition || listPosition.last}"><i class="material-icons">skip_next</i></button>
               <button class="player-button" @click="loop()"><i class="material-icons">loop</i></button>
               <button class="player-button volume-button">
-                <i class="material-icons">volume_up</i>
+                <i class="material-icons"  @click="mute()" v-if="!isMuted">volume_up</i>
+                <i class="material-icons" @click="unmute()" v-else>volume_off</i>
                 <div class="volume" id="volume">
                   <div class="volume-bar" :style="`width:${volume}%`" :class="{muted: isMuted}"></div>
                 </div>

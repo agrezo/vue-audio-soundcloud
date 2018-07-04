@@ -182,9 +182,11 @@ export default {
       this.volume = parseInt((e.offsetX / el.offsetWidth) * 100)
       this.widget.setVolume(this.volume)
       if (this.isMuted) this.isMuted = false
+      if (this.volume === 0) this.isMuted = true
     },
 
     unmute () {
+      if (this.volume === 0) this.volume = 10
       this.isMuted = false
       this.widget.setVolume(this.volume)
     },

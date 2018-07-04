@@ -21,7 +21,6 @@
       unmute,
       volume,
     }"></slot>
-    
   </div>
 </template>
 
