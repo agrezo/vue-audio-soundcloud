@@ -240,13 +240,14 @@ export default {
       }
     }
   },
-  mounted () {
+  created () {
     Vue.prototype.$AudioSoundcloud = {
       load: params => this.load(params),
       pause: () => this.pause(),
       play: () => this.play(),
     }
-
+  },
+  mounted () {
     this.volume = this.defaultVolume
 
     this.widget = SC.Widget('soundcloud-iframe')

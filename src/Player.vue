@@ -10,6 +10,7 @@
       isLoop,
       isMuted,
       isPlaying,
+      mute,
       next,
       play,
       pause,
@@ -17,8 +18,10 @@
       progression,
       fastBackward,
       fastForward,
+      unmute,
       volume,
     }"></slot>
+    
   </div>
 </template>
 

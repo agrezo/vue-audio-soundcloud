@@ -37,6 +37,15 @@ h4 {
   margin-top: 50px;
 }
 
+
+.selected {
+  color: #ff6b81;
+}
+
+.disabled {
+  opacity: .4;
+}
+
 /* Track element style */
 .track {
   background: #fff;
@@ -67,9 +76,6 @@ h4 {
   font-weight: 700;
 }
 
-.disabled, .selected {
-  color: #ff6b81;
-}
 
 /* Player style */
 .player {
@@ -92,6 +98,7 @@ h4 {
   border: 0;
   color: #fff;
   cursor: pointer;
+  flex: 1;
 }
 .player-button:focus {
   outline: none;
@@ -127,7 +134,6 @@ h4 {
   font-size: .75rem;
   color: #aaa;
 }
-
 
 .player-timeline {
   align-items: center;
@@ -169,18 +175,27 @@ h4 {
 }
 
 .player-actions {
-  align-items: center;
   display: flex;
   flex: 1;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   padding-right: 10px;
+}
+.volume-button {
+  position: relative;
+}
+.volume-button:hover .volume {
+  display: flex;
 }
 .volume {
   align-items: center;
-  display: flex;
+  background: #0F0F0F;
+  bottom: 100%;
+  display: none;
   flex: 1;
   height: 40px;
-  position: relative;
+  position: absolute;
+  right: 0;
+  width: 200px;
 }
 .volume:before {
   content: "";
@@ -191,10 +206,10 @@ h4 {
   border-radius: 100px;
 }
 .volume-bar {
-  background: #008000;
+  background: #ff6b81;
   border-radius: 100px;
   height: 3px;
-  left: 0;
+  left: 0px;
   position: absolute;
 }
 .volume-bar.muted {

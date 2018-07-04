@@ -25,9 +25,7 @@
         <div 
           class="track"
           :class="{selected: current === single.id}"
-          @click="$AudioSoundcloud.load({
-            track: single,
-          })"
+          @click="launch({ track: single, })"
         >
           <div class="track-cover"><img :src="single.artwork_url" /></div>
           <div>
@@ -42,7 +40,7 @@
           v-for="(track) in playlist"
           :key="track.id" 
           :class="{selected: current === track.id}"
-          @click="$AudioSoundcloud.load({ track: track, list: playlist, })"
+          @click="launch({ track: track, list: playlist, })"
         >
           <div class="track-cover">
             <img :src="track.artwork_url" />
@@ -57,7 +55,7 @@
       <!-- Display source code of the player -->
 
       <!-- Audio player -->
-      <vue-audio-soundcloud :elements="{ timeline: 'timeline', volume: 'volume' }" :default-volume="80" @load="setNewTrack" class="player">
+      <vue-audio-soundcloud :elements="{ timeline: 'timeline', volume: 'volume' }" :default-volume="80" @load="setNewTrack" class="player" v-if="display">
         <template slot-scope="{currentTrack, duration, listPosition, loop, isLoop, isMuted, isPlaying, next, play, pause, previous, progression, fastBackward, fastForward, volume}" class="blabla">
           <div class="player-container">
             <div class="player-infos">
@@ -82,11 +80,12 @@
               <button class="player-button" @click="fastForward()"><i class="material-icons">fast_forward</i></button>
               <button class="player-button" @click="next()" :class="{disabled: !listPosition || listPosition.last}"><i class="material-icons">skip_next</i></button>
               <button class="player-button" @click="loop()"><i class="material-icons">loop</i></button>
-              <button class="player-button" @click="loop()"><i class="material-icons">volume_up</i></button>
-            
-              <!-- <div class="volume" id="volume">
-                <div class="volume-bar" :style="`width:${volume}%`" :class="{muted: isMuted}"></div>
-              </div> -->
+              <button class="player-button volume-button">
+                <i class="material-icons">volume_up</i>
+                <div class="volume" id="volume">
+                  <div class="volume-bar" :style="`width:${volume}%`" :class="{muted: isMuted}"></div>
+                </div>
+              </button>
             </div>
           </div>
         </template>
@@ -158,6 +157,12 @@
           methods: {
             setNewTrack(id) {
               this.current = id
+            },
+            launch (params) {
+              this.display = true;
+              this.$nextTick(() => {
+                this.$AudioSoundcloud.load(params);
+              })
             }
           },
         })
