@@ -81,10 +81,12 @@
               <button class="player-button" @click="next()" :class="{disabled: !listPosition || listPosition.last}"><i class="material-icons">skip_next</i></button>
               <button class="player-button" @click="loop()"><i class="material-icons">loop</i></button>
               <button class="player-button volume-button">
-                <i class="material-icons"  @click="mute()" v-if="!isMuted">volume_up</i>
-                <i class="material-icons" @click="unmute()" v-else>volume_off</i>
-                <div class="volume" id="volume">
-                  <div class="volume-bar" :style="`width:${volume}%`" :class="{muted: isMuted}"></div>
+                <div v-if="!isMuted" @click="mute()"><i class="material-icons">volume_up</i></div>
+                <div v-else @click="unmute()"><i class="material-icons">volume_off</i></div>
+                <div class="volume">
+                  <div id="volume">
+                    <div class="volume-bar" :style="`width:${volume}%`" :class="{muted: isMuted}"></div>
+                  </div>
                 </div>
               </button>
             </div>
