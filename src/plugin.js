@@ -175,9 +175,9 @@ export default {
       this.listPosition.last = (this.listPosition.current === this.list.length - 1 && this.isLoop !== 'list') ? true : false
     },
 
-    setTime(e) {
+    setTime () {
       this.widget.getDuration(duration => {
-        this.widget.seekTo(parseInt(e.offsetX / this.els.timeline.offsetWidth * duration))
+        this.widget.seekTo(parseInt(this.progression / 100 * duration))
       })
     },
 
@@ -194,10 +194,16 @@ export default {
       this.widget.setVolume(this.volume)
     },
 
+    _disableSelect (e) {
+      e.preventDefault()
+    },
+
     _handleMouseUp () {
       if (this.isDraggable.timeline) {
-        this.els.timeline.addEventListener('mousedown', this._timelineMove, true)
+        this.setTime()
+        this.els.timeline.removeEventListener('mousedown', this._timelineMove, true)
         window.removeEventListener('mousemove', this._timelineMove, true)
+        window.removeEventListener('selectstart', this._disableSelect)
       }
 
       this.isDraggable = {
@@ -215,19 +221,22 @@ export default {
     //   if (this.isDraggable) this.setTime(e, this.els.timeline)
     // },
     
-    _handleTimelineMouseDown () {
-      this.isDraggable.timeline = true
-      this.els.timeline.addEventListener('mousedown', this._timelineMove, true)
-      window.addEventListener('mousemove', this._timelineMove, true)
-    },
+   
 
-    _handleVolumeClick (e) {
-      this.isDraggable = true
-      this.setVolume(e)
-    },
+    // _handleVolumeClick (e) {
+    //   this.isDraggable = true
+    //   this.setVolume(e)
+    // },
     
-    _handleVolumeMove (e) {
-      if (this.isDraggable) this.setVolume(e)
+    // _handleVolumeMove (e) {
+    //   if (this.isDraggable) this.setVolume(e)
+    // },
+
+    _handleTimelineMouseDown(e) {
+      this.isDraggable.timeline = true
+      this._timelineMove(e)
+      window.addEventListener('mousemove', this._timelineMove, true)
+      window.addEventListener('selectstart', this._disableSelect)
     },
 
     _timelineMove (e) {
@@ -235,6 +244,7 @@ export default {
       if (newProgression >= 0 && newProgression <= 100) this.progression = newProgression
       if (newProgression < 0) this.progression = 0
       if (newProgression > 100) this.progression = 100
+      console.log('progression', this.progression)
     },
 
     _shortcuts (e) {
@@ -297,7 +307,7 @@ export default {
         this.duration.current = convertTimeMMSS(data.currentPosition)
       })
       if (this.els.timeline) {
-        this.els.timeline.addEventListener('mousedown', this._handleTimelineMouseDown)
+        this.els.timeline.addEventListener('mousedown', this._handleTimelineMouseDown, true)
       }
       // if (this.els.timeline) {
       //   this.els.timeline.addEventListener('mousedown', this._handleTimelineMouseDown)
@@ -307,8 +317,8 @@ export default {
       //   this.els.volume.addEventListener('mousedown', this._handleVolumeClick)
       //   this.els.volume.addEventListener('mousemove', this._handleVolumeMove)
       // }
-      window.addEventListener('mouseup', this._handleMouseUp)
-      window.addEventListener('keydown', this._shortcuts)
+      window.addEventListener('mouseup', this._handleMouseUp, true)
+      window.addEventListener('keydown', this._shortcuts, true)
     })
   },
   beforeDestoy() {
