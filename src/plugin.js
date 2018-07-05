@@ -26,7 +26,10 @@ export default {
     els: {},
     list: [],
     listPosition: {},
-    isDraggable: false,
+    isDraggable: {
+      timeline: false,
+      volume: false,
+    },
     isLoading: false,
     isLoop: false,
     isMuted: false,
@@ -172,14 +175,14 @@ export default {
       this.listPosition.last = (this.listPosition.current === this.list.length - 1 && this.isLoop !== 'list') ? true : false
     },
 
-    setTime(e, el) {
+    setTime(e) {
       this.widget.getDuration(duration => {
-        this.widget.seekTo(parseInt(e.offsetX / el.offsetWidth * duration))
+        this.widget.seekTo(parseInt(e.offsetX / this.els.timeline.offsetWidth * duration))
       })
     },
 
-    setVolume (e, el) {
-      this.volume = parseInt((e.offsetX / el.offsetWidth) * 100)
+    setVolume (e) {
+      this.volume = parseInt((e.offsetX / this.els.volume.offsetWidth) * 100)
       this.widget.setVolume(this.volume)
       if (this.isMuted) this.isMuted = false
       if (this.volume === 0) this.isMuted = true
@@ -192,25 +195,46 @@ export default {
     },
 
     _handleMouseUp () {
-      this.isDraggable = false
+      if (this.isDraggable.timeline) {
+        this.els.timeline.addEventListener('mousedown', this._timelineMove, true)
+        window.removeEventListener('mousemove', this._timelineMove, true)
+      }
+
+      this.isDraggable = {
+        timeline: false,
+        volume: false,
+      }
     },
 
-    _handleTimelineClick (e) {
-      this.isDraggable = true
-      this.setTime(e, this.els.timeline)
-    },
+    // _handleTimelineClick (e) {
+    //   this.isDraggable = true
+    //   this.setTime(e, this.els.timeline)
+    // },
 
-    _handleTimelineMove (e) {
-      if (this.isDraggable) this.setTime(e, this.els.timeline)
+    // _handleTimelineMove (e) {
+    //   if (this.isDraggable) this.setTime(e, this.els.timeline)
+    // },
+    
+    _handleTimelineMouseDown () {
+      this.isDraggable.timeline = true
+      this.els.timeline.addEventListener('mousedown', this._timelineMove, true)
+      window.addEventListener('mousemove', this._timelineMove, true)
     },
 
     _handleVolumeClick (e) {
       this.isDraggable = true
-      this.setVolume(e, this.els.volume)
+      this.setVolume(e)
     },
     
     _handleVolumeMove (e) {
-      if (this.isDraggable) this.setVolume(e, this.els.volume)
+      if (this.isDraggable) this.setVolume(e)
+    },
+
+    _timelineMove (e) {
+      let newProgression = parseInt(((e.clientX - this.els.timeline.getBoundingClientRect().left) / this.els.timeline.offsetWidth) * 100)
+      if (newProgression >= 0 && newProgression <= 100) this.progression = newProgression
+      if (newProgression < 0) this.progression = 0
+      if (newProgression > 100) this.progression = 100
     },
 
     _shortcuts (e) {
@@ -269,19 +293,22 @@ export default {
         this.$emit('play')
       })
       this.widget.bind(SC.Widget.Events.PLAY_PROGRESS, data => {
-        this.progression = data.relativePosition * 100
+        if (!this.isDraggable.timeline) this.progression = data.relativePosition * 100
         this.duration.current = convertTimeMMSS(data.currentPosition)
       })
       if (this.els.timeline) {
-        this.els.timeline.addEventListener('mousedown', this._handleTimelineClick)
-        this.els.timeline.addEventListener('mousemove', this._handleTimelineMove)
+        this.els.timeline.addEventListener('mousedown', this._handleTimelineMouseDown)
       }
-      if (this.els.volume) {
-        this.els.volume.addEventListener('mousedown', this._handleVolumeClick)
-        this.els.volume.addEventListener('mousemove', this._handleVolumeMove)
-      }
-      document.addEventListener('mouseup', this._handleMouseUp)
-      document.addEventListener('keydown', this._shortcuts)
+      // if (this.els.timeline) {
+      //   this.els.timeline.addEventListener('mousedown', this._handleTimelineMouseDown)
+      //   this.els.timeline.addEventListener('mousemove', this._handleTimelineMove)
+      // }
+      // if (this.els.volume) {
+      //   this.els.volume.addEventListener('mousedown', this._handleVolumeClick)
+      //   this.els.volume.addEventListener('mousemove', this._handleVolumeMove)
+      // }
+      window.addEventListener('mouseup', this._handleMouseUp)
+      window.addEventListener('keydown', this._shortcuts)
     })
   },
   beforeDestoy() {
@@ -298,7 +325,7 @@ export default {
       this.els.volume.removeEventListener('mousedown', this._handleVolumeClick)
       this.els.volume.removeEventListener('mousemove', this._handleVolumeMove)
     }
-    document.removeEventListener('mouseup', this._handleMouseUp)
-    document.removeEventListener('keydown', this._shortcuts)
+    window.removeEventListener('mouseup', this._handleMouseUp)
+    window.removeEventListener('keydown', this._shortcuts)
   }
 }
