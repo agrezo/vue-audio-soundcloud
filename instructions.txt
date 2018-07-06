@@ -2,3 +2,4 @@
 2. Ajouter un système pour afficher ou non le player. Mettre un nouveau props du genre "show" et ensuite si show = true, on lance la fonction init(), 
 sinon au $prototype.load() on lance init(). On peut rajouter une variable isInit pour éviter de relancer init() à chaque load()
 3. Ajouter les class pour le bouton de loop
+4. Faire la doc
