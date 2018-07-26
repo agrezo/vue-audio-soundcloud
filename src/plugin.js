@@ -181,8 +181,8 @@ export default {
       })
     },
 
-    setVolume (e) {
-      this.volume = parseInt((e.offsetX / this.els.volume.offsetWidth) * 100)
+    setVolume () {
+      // this.volume = parseInt((e.offsetX / this.els.volume.offsetWidth) * 100)
       this.widget.setVolume(this.volume)
       if (this.isMuted) this.isMuted = false
       if (this.volume === 0) this.isMuted = true
@@ -203,6 +203,13 @@ export default {
         this.setTime()
         this.els.timeline.removeEventListener('mousedown', this._timelineMove, true)
         window.removeEventListener('mousemove', this._timelineMove, true)
+        window.removeEventListener('selectstart', this._disableSelect)
+      }
+
+      if (this.isDraggable.volume) {
+        this.setVolume()
+        this.els.timeline.removeEventListener('mousedown', this._volumeMove, true)
+        window.removeEventListener('mousemove', this._volumeMove, true)
         window.removeEventListener('selectstart', this._disableSelect)
       }
 
@@ -244,7 +251,21 @@ export default {
       if (newProgression >= 0 && newProgression <= 100) this.progression = newProgression
       if (newProgression < 0) this.progression = 0
       if (newProgression > 100) this.progression = 100
-      console.log('progression', this.progression)
+    },
+
+    _handleVolumeMouseDown(e) {
+      this.isDraggable.volume = true
+      this._volumeMove(e)
+      window.addEventListener('mousemove', this._volumeMove, true)
+      window.addEventListener('selectstart', this._disableSelect)
+    },
+
+    _volumeMove (e) {
+      let newVolume = parseInt(((e.clientX - this.els.volume.getBoundingClientRect().left) / this.els.volume.offsetWidth) * 100)
+      if (newVolume >= 0 && newVolume <= 100) this.volume = newVolume
+      if (newVolume < 0) this.volume = 0
+      if (newVolume > 100) this.volume = 100
+      this.setVolume()
     },
 
     _shortcuts (e) {
@@ -268,11 +289,13 @@ export default {
       }
       else if (key === 38 && e.shiftKey) { // SHIFT + U-ARROW
         (this.volume <= 95) ? this.volume += 5 : this.volume = 100
-        this.widget.setVolume(this.volume)
+        // this.widget.setVolume(this.volume)
+        this.setVolume()
       }
       else if (key === 40 && e.shiftKey) { // SHIFT + D-ARROW
         (this.volume >= 5) ? this.volume -= 5 : this.volume = 0
-        this.widget.setVolume(this.volume)
+        // this.widget.setVolume(this.volume)
+        this.setVolume()
       }
     }
   },
@@ -306,9 +329,8 @@ export default {
         if (!this.isDraggable.timeline) this.progression = data.relativePosition * 100
         this.duration.current = convertTimeMMSS(data.currentPosition)
       })
-      if (this.els.timeline) {
-        this.els.timeline.addEventListener('mousedown', this._handleTimelineMouseDown, true)
-      }
+      if (this.els.timeline) this.els.timeline.addEventListener('mousedown', this._handleTimelineMouseDown, true)
+      if (this.els.volume) this.els.volume.addEventListener('mousedown', this._handleVolumeMouseDown, true)
       // if (this.els.timeline) {
       //   this.els.timeline.addEventListener('mousedown', this._handleTimelineMouseDown)
       //   this.els.timeline.addEventListener('mousemove', this._handleTimelineMove)
