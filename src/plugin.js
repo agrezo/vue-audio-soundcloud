@@ -36,6 +36,7 @@ export default {
     isPlaying: false,
     progression: 0,
     seekToShortcutAvailable: true,
+    totalDuration: 0,
     volume: 100,
     widget: {},
   }),
@@ -176,13 +177,11 @@ export default {
     },
 
     setTime () {
-      this.widget.getDuration(duration => {
-        this.widget.seekTo(parseInt(this.progression / 100 * duration))
-      })
+      console.log('prog:', this.progression)
+      this.widget.seekTo(parseInt(this.progression / 100 * this.totalDuration))
     },
 
     setVolume () {
-      // this.volume = parseInt((e.offsetX / this.els.volume.offsetWidth) * 100)
       this.widget.setVolume(this.volume)
       if (this.isMuted) this.isMuted = false
       if (this.volume === 0) this.isMuted = true
@@ -218,26 +217,6 @@ export default {
         volume: false,
       }
     },
-
-    // _handleTimelineClick (e) {
-    //   this.isDraggable = true
-    //   this.setTime(e, this.els.timeline)
-    // },
-
-    // _handleTimelineMove (e) {
-    //   if (this.isDraggable) this.setTime(e, this.els.timeline)
-    // },
-    
-   
-
-    // _handleVolumeClick (e) {
-    //   this.isDraggable = true
-    //   this.setVolume(e)
-    // },
-    
-    // _handleVolumeMove (e) {
-    //   if (this.isDraggable) this.setVolume(e)
-    // },
 
     _handleTimelineMouseDown(e) {
       this.isDraggable.timeline = true
@@ -289,12 +268,10 @@ export default {
       }
       else if (key === 38 && e.shiftKey) { // SHIFT + U-ARROW
         (this.volume <= 95) ? this.volume += 5 : this.volume = 100
-        // this.widget.setVolume(this.volume)
         this.setVolume()
       }
       else if (key === 40 && e.shiftKey) { // SHIFT + D-ARROW
         (this.volume >= 5) ? this.volume -= 5 : this.volume = 0
-        // this.widget.setVolume(this.volume)
         this.setVolume()
       }
     }
@@ -313,6 +290,8 @@ export default {
     this.els.timeline = document.getElementById(this.elements.timeline)
     this.els.volume = document.getElementById(this.elements.volume)
 
+    
+
     this.widget.bind(SC.Widget.Events.READY, () => {
       this.widget.bind(SC.Widget.Events.FINISH, () => {
         this.finished()
@@ -329,16 +308,13 @@ export default {
         if (!this.isDraggable.timeline) this.progression = data.relativePosition * 100
         this.duration.current = convertTimeMMSS(data.currentPosition)
       })
+
+      this.widget.getDuration(duration => {
+        this.totalDuration = duration
+      })
+
       if (this.els.timeline) this.els.timeline.addEventListener('mousedown', this._handleTimelineMouseDown, true)
       if (this.els.volume) this.els.volume.addEventListener('mousedown', this._handleVolumeMouseDown, true)
-      // if (this.els.timeline) {
-      //   this.els.timeline.addEventListener('mousedown', this._handleTimelineMouseDown)
-      //   this.els.timeline.addEventListener('mousemove', this._handleTimelineMove)
-      // }
-      // if (this.els.volume) {
-      //   this.els.volume.addEventListener('mousedown', this._handleVolumeClick)
-      //   this.els.volume.addEventListener('mousemove', this._handleVolumeMove)
-      // }
       window.addEventListener('mouseup', this._handleMouseUp, true)
       window.addEventListener('keydown', this._shortcuts, true)
     })
