@@ -83,7 +83,7 @@ export default {
           this.isPlaying = true
           this.isMuted ? this.widget.setVolume(0) : this.widget.setVolume(this.volume)
           this.$emit('load', this.currentTrack.id)
-          
+
           this.widget.getDuration(duration => {
             this.totalDuration = duration
           })
@@ -181,7 +181,6 @@ export default {
     },
 
     setTime () {
-      console.log('prog:', this.progression)
       this.widget.seekTo(parseInt(this.progression / 100 * this.totalDuration))
     },
 
