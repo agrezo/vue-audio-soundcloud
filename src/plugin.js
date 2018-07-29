@@ -83,6 +83,10 @@ export default {
           this.isPlaying = true
           this.isMuted ? this.widget.setVolume(0) : this.widget.setVolume(this.volume)
           this.$emit('load', this.currentTrack.id)
+          
+          this.widget.getDuration(duration => {
+            this.totalDuration = duration
+          })
         }
       })
     },
@@ -290,8 +294,6 @@ export default {
     this.els.timeline = document.getElementById(this.elements.timeline)
     this.els.volume = document.getElementById(this.elements.volume)
 
-    
-
     this.widget.bind(SC.Widget.Events.READY, () => {
       this.widget.bind(SC.Widget.Events.FINISH, () => {
         this.finished()
@@ -307,10 +309,6 @@ export default {
       this.widget.bind(SC.Widget.Events.PLAY_PROGRESS, data => {
         if (!this.isDraggable.timeline) this.progression = data.relativePosition * 100
         this.duration.current = convertTimeMMSS(data.currentPosition)
-      })
-
-      this.widget.getDuration(duration => {
-        this.totalDuration = duration
       })
 
       if (this.els.timeline) this.els.timeline.addEventListener('mousedown', this._handleTimelineMouseDown, true)
